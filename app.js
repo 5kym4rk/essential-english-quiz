@@ -20,8 +20,24 @@ function begin(retry){
  queue=shuffle(retry||pool).slice(0,retry?retry.length:+$('count').value);
  if(!queue.length)return;
  index=0;answers=[];$('welcome').hidden=true;$('result').hidden=true;$('quiz').hidden=false;render();
- if(matchMedia('(max-width:680px)').matches)$('quiz').scrollIntoView({behavior:'smooth',block:'start'});
+
 }
+// Allocate the remaining viewport height to the picture, keeping all answers visible.
+let pictureFrame;
+function fitQuestionPicture(){
+ const quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
+ if(quiz.hidden||!image||!last)return;
+ const height=window.visualViewport?.height||window.innerHeight;
+ const fixedHeight=last.getBoundingClientRect().bottom-quiz.getBoundingClientRect().top-image.getBoundingClientRect().height;
+ const pictureHeight=Math.max(48,Math.floor(height-16-fixedHeight));
+ image.style.height=pictureHeight+'px';
+}
+function schedulePictureFit(){
+ cancelAnimationFrame(pictureFrame);
+ pictureFrame=requestAnimationFrame(fitQuestionPicture);
+}
+window.addEventListener('resize',schedulePictureFit);
+window.visualViewport?.addEventListener('resize',schedulePictureFit);
 function render(){
  stopAudio();locked=false;const w=queue[index];choices=makeChoices(w,words,mode);
  text('session-label','CÂU '+(index+1)+' / '+queue.length);text('score',answers.filter(a=>a.correct).length+' câu đúng');
@@ -38,6 +54,10 @@ function render(){
   image.onerror=()=>figure.remove();figure.append(image,caption);$('question-image').append(figure);
  }
  choices.forEach((x,i)=>{const b=document.createElement('button');b.className='option';const key=document.createElement('span');key.className='key';key.textContent=i+1;const label=document.createElement('span');label.textContent=formatAnswer(mode==='en'?x.meaning:x.word);b.append(key,label);b.onclick=()=>choose(i);$('options').append(b);});
+ requestAnimationFrame(()=>{
+  fitQuestionPicture();
+  $('quiz').scrollIntoView({behavior:'instant',block:'start'});
+ });
 }
 function choose(i){
  if(locked||!choices[i])return;locked=true;const w=queue[index];const correct=choices[i].id===w.id;
