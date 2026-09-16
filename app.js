@@ -30,6 +30,13 @@ function render(){
  text('prompt',mode==='en'?'Chọn nghĩa tiếng Việt phù hợp':'Chọn từ tiếng Anh phù hợp');
  text('question',mode==='en'?w.word:w.meaning);text('ipa',mode==='en'?w.ipa:'');
  $('audio').hidden=mode==='vi'||!w.audio;$('next').hidden=true;$('feedback').replaceChildren();$('options').replaceChildren();
+ $('question-image').replaceChildren();
+ if(w.image){
+  const figure=document.createElement('figure');figure.className='illustration';
+  const image=document.createElement('img');image.src=w.image;image.alt='Ảnh minh họa từ vựng';image.decoding='async';
+  const caption=document.createElement('figcaption');caption.textContent='Ảnh minh họa';
+  image.onerror=()=>figure.remove();figure.append(image,caption);$('question-image').append(figure);
+ }
  choices.forEach((x,i)=>{const b=document.createElement('button');b.className='option';const key=document.createElement('span');key.className='key';key.textContent=i+1;const label=document.createElement('span');label.textContent=formatAnswer(mode==='en'?x.meaning:x.word);b.append(key,label);b.onclick=()=>choose(i);$('options').append(b);});
 }
 function choose(i){
@@ -39,12 +46,7 @@ function choose(i){
  const title=document.createElement('strong');title.textContent=correct?'Chính xác!':'Đáp án đúng: '+formatAnswer(mode==='en'?w.meaning:w.word);
  const explanation=document.createElement('p');explanation.textContent=w.word+' '+w.ipa+' — '+w.explanation;
  $('feedback').append(title,explanation);
- if(w.image){
-  const figure=document.createElement('figure');figure.className='illustration';
-  const image=document.createElement('img');image.src=w.image;image.alt='Ảnh minh họa cho từ '+w.word;image.decoding='async';
-  const caption=document.createElement('figcaption');caption.textContent='Ảnh minh họa · '+w.word;
-  image.onerror=()=>figure.remove();figure.append(image,caption);$('feedback').append(figure);
- }$('audio').hidden=!w.audio;$('next').hidden=false;
+$('audio').hidden=!w.audio;$('next').hidden=false;
  text('score',answers.filter(a=>a.correct).length+' câu đúng');text('next',index===queue.length-1?'Xem kết quả →':'Câu tiếp theo →');
 }
 function finish(){
