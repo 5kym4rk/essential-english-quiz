@@ -3,6 +3,8 @@ const $=id=>document.getElementById(id);
 let words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playing;
 const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const norm=s=>s.normalize('NFC').toLocaleLowerCase().trim();
+// Apply identical capitalization to correct answers and distractors.
+const formatAnswer=s=>s.trim().replace(/\p{L}/u,c=>c.toLocaleUpperCase('vi-VN'));
 function makeChoices(w,all,direction){
  const field=direction==='en'?'meaning':'word',other=direction==='en'?'word':'meaning';
  const seen=new Set([norm(w[field])]);const candidates=[];
@@ -28,15 +30,21 @@ function render(){
  text('prompt',mode==='en'?'Chọn nghĩa tiếng Việt phù hợp':'Chọn từ tiếng Anh phù hợp');
  text('question',mode==='en'?w.word:w.meaning);text('ipa',mode==='en'?w.ipa:'');
  $('audio').hidden=mode==='vi'||!w.audio;$('next').hidden=true;$('feedback').replaceChildren();$('options').replaceChildren();
- choices.forEach((x,i)=>{const b=document.createElement('button');b.className='option';const key=document.createElement('span');key.className='key';key.textContent=i+1;const label=document.createElement('span');label.textContent=mode==='en'?x.meaning:x.word;b.append(key,label);b.onclick=()=>choose(i);$('options').append(b);});
+ choices.forEach((x,i)=>{const b=document.createElement('button');b.className='option';const key=document.createElement('span');key.className='key';key.textContent=i+1;const label=document.createElement('span');label.textContent=formatAnswer(mode==='en'?x.meaning:x.word);b.append(key,label);b.onclick=()=>choose(i);$('options').append(b);});
 }
 function choose(i){
  if(locked||!choices[i])return;locked=true;const w=queue[index];const correct=choices[i].id===w.id;
  answers.push({word:w,correct,selected:choices[i]});
  [...$('options').children].forEach((b,j)=>{b.disabled=true;if(choices[j].id===w.id)b.classList.add('correct');else if(j===i)b.classList.add('wrong');});
- const title=document.createElement('strong');title.textContent=correct?'Chính xác!':'Đáp án đúng: '+(mode==='en'?w.meaning:w.word);
+ const title=document.createElement('strong');title.textContent=correct?'Chính xác!':'Đáp án đúng: '+formatAnswer(mode==='en'?w.meaning:w.word);
  const explanation=document.createElement('p');explanation.textContent=w.word+' '+w.ipa+' — '+w.explanation;
- $('feedback').append(title,explanation);$('audio').hidden=!w.audio;$('next').hidden=false;
+ $('feedback').append(title,explanation);
+ if(w.image){
+  const figure=document.createElement('figure');figure.className='illustration';
+  const image=document.createElement('img');image.src=w.image;image.alt='Ảnh minh họa cho từ '+w.word;image.decoding='async';
+  const caption=document.createElement('figcaption');caption.textContent='Ảnh minh họa · '+w.word;
+  image.onerror=()=>figure.remove();figure.append(image,caption);$('feedback').append(figure);
+ }$('audio').hidden=!w.audio;$('next').hidden=false;
  text('score',answers.filter(a=>a.correct).length+' câu đúng');text('next',index===queue.length-1?'Xem kết quả →':'Câu tiếp theo →');
 }
 function finish(){
@@ -44,7 +52,7 @@ function finish(){
  const correct=answers.filter(a=>a.correct).length,wrong=answers.filter(a=>!a.correct);
  text('result-score',correct+'/'+queue.length);text('result-message','Bạn trả lời đúng '+Math.round(correct/queue.length*100)+'%. '+(wrong.length?'Ôn lại các từ dưới đây để nhớ chắc hơn.':'Bạn đã trả lời đúng tất cả các câu!'));
  $('retry').hidden=!wrong.length;$('review').replaceChildren();
- wrong.forEach(a=>{const div=document.createElement('div');div.className='review-item';const b=document.createElement('strong');b.textContent=a.word.word+' — '+a.word.meaning;const s=document.createElement('span');s.textContent='Bạn chọn: '+(mode==='en'?a.selected.meaning:a.selected.word);div.append(b,s);$('review').append(div);});
+ wrong.forEach(a=>{const div=document.createElement('div');div.className='review-item';const b=document.createElement('strong');b.textContent=a.word.word+' — '+a.word.meaning;const s=document.createElement('span');s.textContent='Bạn chọn: '+formatAnswer(mode==='en'?a.selected.meaning:a.selected.word);div.append(b,s);$('review').append(div);});
  try{localStorage.setItem('wordcraft-last',JSON.stringify({correct,total:queue.length}));}catch{}history();
 }
 $('settings').onsubmit=e=>{e.preventDefault();begin();};$('again').onclick=()=>begin();

@@ -1,5 +1,14 @@
 import pathlib,json,zipfile,sqlite3,re,html,collections
+from html.parser import HTMLParser
+class ImageSource(HTMLParser):
+ def __init__(self):
+  super().__init__(); self.src=None
+ def handle_starttag(self,tag,attrs):
+  if tag.lower()=='img' and self.src is None:
+   self.src=dict(attrs).get('src')
 root=pathlib.Path(__file__).resolve().parent
+(root/'media').mkdir(exist_ok=True)
+(root/'images').mkdir(exist_ok=True)
 def clean(s):
  s=re.sub(r'\{\{c\d+::(.*?)(?:::[^{}]*)?\}\}',r'\1',s)
  return re.sub(r'\s+',' ',html.unescape(re.sub(r'<[^>]*>',' ',s))).strip()
@@ -15,6 +24,14 @@ for book in range(1,7):
    if not meaning:
     found=re.search(r'<font[^>]*>\s*<b>(.*?)</b>',f['Full Vietnamese'],re.S);assert found;meaning=clean(found.group(1))
    w={'id':f'{book}-{nid}','book':book,'unit':int(match.group(1)),'word':clean(f['Keyword']),'meaning':meaning,'ipa':clean(f['Transcription']),'explanation':clean(f['Explanation'])}
+   image=ImageSource();image.feed(f.get('Image',f.get('IMG','')))
+   if image.src:
+    assert image.src in media, image.src
+    ext=pathlib.Path(image.src).suffix.lower()
+    assert ext in {'.jpg','.jpeg','.png','.gif','.webp'}, ext
+    image_name=f'{book}-{nid}{ext}'
+    (root/'images'/image_name).write_bytes(z.read(media[image.src]))
+    w['image']='images/'+image_name
    snd=re.search(r'\[sound:([^]]+)\]',f.get('Sound',f.get('Keyword_Sound','')))
    if snd and snd.group(1) in media:
     name=f'{book}-{nid}.mp3';(root/'media'/name).write_bytes(z.read(media[snd.group(1)]));w['audio']='media/'+name
