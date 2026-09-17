@@ -4,3 +4,37 @@
 #quiz #meta{margin:12px 0 8px}#quiz #prompt{margin:8px 0}#quiz #ipa{margin:6px 0}#quiz #options{gap:8px;margin:10px 0}#quiz .option{padding:10px 14px;min-height:48px}@media(max-width:680px){.illustration img{max-height:84px}}
 
 #quiz{scroll-margin-top:8px}.illustration img{width:100%;height:120px;max-height:none;object-fit:contain}@media(max-width:680px){.illustration img{max-height:none}}
+
+/* Older Safari: use flex/block and explicit margins instead of grid and flex-gap. */
+main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:0}
+#sidebar{-webkit-flex:0 0 330px;flex:0 0 330px;margin-right:64px;min-width:0}
+.workspace{-webkit-flex:1 1 0%;flex:1 1 0%;min-width:0}
+.row{display:-webkit-flex;display:flex;gap:0}.row>div{width:50%}.row>div+div{margin-left:12px}
+#options{display:block}#options .option+.option{margin-top:8px}
+.option{display:-webkit-flex;display:flex;gap:0}.option .key{margin-right:15px;flex-shrink:0}
+.heading{gap:0}#audio{margin-left:16px}.heading h2{min-width:0;word-wrap:break-word}
+#change-settings{width:100%;margin-bottom:16px}
+.studying #sidebar{position:-webkit-sticky;position:sticky;top:12px}
+#study-panel{padding:20px;background:white;border:1px solid #dce3de;border-radius:14px}
+#answer-hint{font-size:14px;color:#607467;margin:0 0 14px}
+#study-panel #feedback{max-height:calc(100vh - 270px);overflow:auto;-webkit-overflow-scrolling:touch}
+#study-panel #next{width:100%;margin-top:10px}
+#next-controls{padding-top:6px}#countdown{display:block;font-size:14px;color:#607467}
+#pause-auto{font-size:14px;padding:8px 12px;margin:8px 0 2px}
+#study-panel .answer-meaning{font-weight:600;color:#24473f}
+#audio-status:empty{display:none}#audio-status{font-size:14px;color:#93432e}
+@media(max-width:900px) and (min-width:681px){#sidebar{-webkit-flex-basis:260px;flex-basis:260px;margin-right:28px}}
+@media(max-width:680px){
+ main{display:block}#sidebar{margin-right:0;width:auto}
+ .studying #sidebar{position:static}
+ .studying{padding-bottom:100px}.studying footer{display:none}
+ .studying #study-panel{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px 12px 12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-radius:14px 14px 0 0;box-shadow:0 -3px 20px rgba(20,50,35,.12)}
+ #study-panel #answer-hint{display:none}
+ #study-panel #feedback{max-height:32vh;margin:0 0 6px;overflow:auto}
+ #study-panel #feedback:empty{display:none}
+ #next-controls{padding:0;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-items:center;align-items:center}
+ #study-panel #next{margin:0;-webkit-flex:1 1 180px;flex:1 1 180px;width:auto;min-height:48px}
+ #countdown:not(:empty){width:100%;margin-bottom:6px}
+ #pause-auto{margin:0 8px 0 0;min-height:44px}
+ .studying .workspace{padding-top:16px}
+}
