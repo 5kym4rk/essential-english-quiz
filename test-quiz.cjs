@@ -5,10 +5,12 @@ class El{
  constructor(tag){this.tagName=tag;this.children=[];this.style={};this.hidden=false;this.disabled=false;this.value='';this.classList={add(){},remove(){}};}
  appendChild(n){n.parentNode=this;this.children.push(n);return n;}removeChild(n){this.children.splice(this.children.indexOf(n),1);}
  get firstChild(){return this.children[0];}get lastElementChild(){return this.children[this.children.length-1];}
+ setAttribute(k,v){this[k]=v;}focus(){}
  add(n){this.appendChild(n);}querySelector(tag){for(const c of this.children){if(c.tagName===tag)return c;const found=c.querySelector(tag);if(found)return found;}return null;}
  getBoundingClientRect(){return {top:0,bottom:500,height:120};}scrollIntoView(){}
 }
 const nodes={};ids.forEach(id=>nodes[id]=new El('div'));
+nodes['stats-panel'].hidden=true;nodes['quiz'].hidden=true;
 nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes.count.value='10';nodes['auto-next'].value='0';
 const events={},intervals=new Map();let timerid=0;
 const ctx={console,JSON,Math,Date,document:{hidden:false,body:new El('body'),getElementById:id=>{assert(nodes[id],id);return nodes[id];},createElement:tag=>new El(tag),addEventListener:(k,f)=>events[k]=f},window:{innerHeight:720,matchMedia:()=>({matches:false}),addEventListener(){},scrollTo(){}},localStorage:{getItem(){return null;},setItem(){}},Option:function(t,v){this.textContent=t;this.value=v;},XMLHttpRequest:function(){this.open=()=>{};this.send=()=>{this.status=200;this.responseText=JSON.stringify(data);this.onload();};},Audio:function(){this.play=()=>undefined;this.pause=()=>{};},requestAnimationFrame:f=>{f();return 1;},cancelAnimationFrame(){},setInterval:f=>{intervals.set(++timerid,f);return timerid;},clearInterval:id=>intervals.delete(id)};
@@ -28,3 +30,26 @@ nodes['auto-next'].value='0';nodes.mode.value='vi';ctx.begin();assert.equal(ctx.
 assert(!source.includes('?.'));assert(!source.includes('=>'));assert(!source.includes('replaceChildren'));assert(!source.includes('\\p{'));assert(!source.includes('fetch('));
 console.log('PASS: 0-3 keyboard mapping, duplicate-answer lock, both quiz modes, old audio return value, auto-next/off/pause/background/manual/restart/finish, 3600 words loaded through XHR, unique DOM IDs.');
 try{require('acorn').parse(source,{ecmaVersion:5});console.log('PASS: ES5 parser');}catch(e){if(e.code==='MODULE_NOT_FOUND')console.log('ES5 parser unavailable locally');else throw e;}
+
+const storage={};ctx.localStorage.getItem=k=>Object.prototype.hasOwnProperty.call(storage,k)?storage[k]:null;ctx.localStorage.setItem=(k,v)=>storage[k]=v;
+ctx.studyStats={version:1,completedSessions:0,lessons:{}};ctx.statsMemoryOnly=false;
+const unitA=data.filter(w=>w.book===1&&w.unit===1),unitB=data.filter(w=>w.book===1&&w.unit===2);
+function startStatsQuiz(items){ctx.begin();ctx.queue=items;ctx.index=0;ctx.answers=[];ctx.sessionRecorded=false;ctx.render();}
+function answerAll(){for(let i=0;i<ctx.queue.length;i++){ctx.choose(0);if(i<ctx.queue.length-1)ctx.advance();}}
+startStatsQuiz([unitA[0],unitA[1]]);ctx.choose(0);assert.equal(ctx.studyStats.completedSessions,0,'incomplete is not counted');
+ctx.advance();ctx.choose(0);assert.equal(ctx.studyStats.completedSessions,1);assert.equal(ctx.studyStats.lessons['1-1'].sessions,1,'one lesson once per quiz');
+ctx.finish();ctx.finish();assert.equal(ctx.studyStats.completedSessions,1,'finish cannot double count');
+startStatsQuiz([unitA[0],unitB[0],unitA[1]]);answerAll();assert.equal(ctx.studyStats.completedSessions,2);assert.equal(ctx.studyStats.lessons['1-1'].sessions,2);assert.equal(ctx.studyStats.lessons['1-2'].sessions,1,'mixed lesson counted');
+startStatsQuiz([unitB[1]]);answerAll();assert.equal(ctx.studyStats.lessons['1-2'].sessions,2,'new retry quiz counts once');
+startStatsQuiz([unitA[0],unitB[0]]);ctx.choose(0);ctx.begin();assert.equal(ctx.studyStats.completedSessions,3,'abandoned session does not count');
+ctx.studyStats={version:1,completedSessions:0,lessons:{}};ctx.readStudyStats();assert.equal(ctx.studyStats.completedSessions,3,'reload retains saved totals');
+nodes['stats-book'].value='1';ctx.renderStudyStats();assert.equal(nodes['stats-chart'].children.length,30);
+nodes['stats-book'].value='6';ctx.renderStudyStats();assert.equal(nodes['stats-chart'].children.length,29,'source deck has 29 actual groups');
+const before=ctx.answers.length;ctx.openStudyStats();key('0');assert.equal(ctx.answers.length,before,'stats screen blocks quiz shortcuts');ctx.closeStudyStats();
+ctx.localStorage.getItem=()=>{throw Error('private browsing');};ctx.localStorage.setItem=()=>{throw Error('quota');};
+startStatsQuiz([unitA[0]]);answerAll();const temporaryCount=ctx.studyStats.completedSessions;ctx.readStudyStats();assert.equal(ctx.studyStats.completedSessions,temporaryCount,'blocked storage retains in-memory stats');
+assert(ctx.statsStorageWarning.length>0);startStatsQuiz([unitA[0]]);answerAll();assert.equal(ctx.studyStats.completedSessions,temporaryCount+1,'continued study works with blocked storage');
+assert.throws(()=>ctx.parseStudyStats('{invalid'));const cleaned=ctx.parseStudyStats(JSON.stringify({version:1,completedSessions:-1,lessons:{'1-1':{sessions:-5},'1-2':{sessions:2.9},'__proto__':{},'7-1':{sessions:3}}}));
+assert.equal(cleaned.completedSessions,0);assert.equal(cleaned.lessons['1-2'].sessions,2);assert(!cleaned.lessons['7-1']);
+const natives=process.binding('natives'),acornKey=Object.keys(natives).find(k=>/acorn\/dist\/acorn$/.test(k));if(acornKey){const parser={};vm.runInNewContext(natives[acornKey],parser);parser.acorn.parse(source,{ecmaVersion:5});}
+console.log('PASS: completed/partial/retry/mixed quizzes, duplicate protection, saved reload, blocked storage, chart lesson counts, safe parsing, ES5 syntax.');

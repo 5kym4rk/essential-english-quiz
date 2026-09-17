@@ -14,3 +14,7 @@ All answer options use the same initial-letter capitalization. Original Anki ill
 The quiz uses ES5 JavaScript, XMLHttpRequest, appendChild/removeChild, and flex/block CSS fallbacks for older Safari (target iOS 9+). No optional chaining, Unicode property escapes, replaceChildren, fetch, or Promise requirement. Physical iOS 9/12 hardware has not been tested.
 Answer keys and labels are 0–3; Enter continues after answering. Desktop explanation and navigation are in the left panel. On phones, the next button remains in a fixed bottom panel with a scrollable explanation after answering. Optional auto-next is off by default, selectable at 5/8/10 seconds; it can be stopped and pauses when the page is hidden.
 Run regression checks: node test-quiz.cjs
+
+## Lesson statistics
+The statistics screen uses accessible text and CSS horizontal bars, with one book at a time. The final answer in a completed quiz records one session for each distinct book/unit represented in that quiz. Retries count as new sessions; abandoned quizzes do not count. A session with only part of a lesson is practice, not proof of mastering every word. Duplicate result rendering does not add another count.
+Statistics use localStorage key wordcraft-study-stats-v1 and begin with this release; the prior last-score record has no unit history to reconstruct. Counts are local to one browser/device. If storage is blocked, in-memory counts and a visible warning preserve quiz functionality.

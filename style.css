@@ -48,3 +48,37 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 }
 
 @media(max-width:680px){.studying:not(.answered) #study-panel{display:none}}
+
+/* Lightweight lesson chart: plain text and CSS bars, including older Safari. */
+.stats-link{width:100%;margin:12px 0}
+#study-stats{margin:0 0 16px}
+#stats-panel{max-width:1060px;margin:0 auto 40px;padding:24px 40px;background:white;border:1px solid #dde4df;border-radius:20px}
+.stats-heading{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between}
+.stats-heading>div{min-width:0;margin-right:20px}
+#stats-title{font-size:32px;line-height:1.25;letter-spacing:-.8px;margin:12px 0 22px}
+#close-stats{white-space:nowrap}
+.stats-overview{display:-webkit-flex;display:flex;margin:8px 0 20px}
+.stats-overview>div{-webkit-flex:1;flex:1;border:1px solid #dce6d7;background:#f3f8eb;border-radius:12px;padding:18px}
+.stats-overview>div+div{margin-left:14px}
+.stats-overview span{display:block;font-size:14px;color:#607467}
+.stats-overview strong{display:block;font-size:30px;margin-top:6px}
+.stats-rule,.stats-note,#stats-empty{font-size:14px;line-height:1.7;color:#607467}
+.stats-rule{max-width:800px}
+.stats-filter{max-width:280px;margin:22px 0}
+#stats-book-summary{font-size:21px;margin:26px 0 20px}
+#stats-chart{list-style:none;margin:0;padding:0}
+.stats-row{margin:0 0 18px}
+.stats-row-label{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;line-height:1.5;font-size:14px;margin-bottom:5px}
+.stats-row-label strong{font-weight:600;margin-left:14px;text-align:right}
+.stats-track{background:#edf1ed;height:12px;border-radius:6px;overflow:hidden}
+.stats-bar{display:block;height:100%;background:#426e45;border-radius:6px}
+.stats-unseen .stats-row-label{color:#697c71}
+.stats-note{border-top:1px solid #edf1ed;padding-top:14px;margin-top:20px}
+@media(max-width:680px){
+ #stats-panel{margin:0 12px 24px;padding:20px 16px;border-radius:14px}
+ .stats-heading{display:block}.stats-heading>div{margin:0}
+ #stats-title{font-size:27px}#close-stats{width:100%;margin-bottom:18px}
+ .stats-overview>div{padding:12px}.stats-overview>div+div{margin-left:8px}
+ .stats-overview strong{font-size:24px}
+ .stats-filter{max-width:none}
+}
