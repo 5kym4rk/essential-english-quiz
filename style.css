@@ -38,3 +38,11 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
  #pause-auto{margin:0 8px 0 0;min-height:44px}
  .studying .workspace{padding-top:16px}
 }
+
+@media(max-width:680px) and (max-height:560px){
+ #quiz #meta{margin:2px 0;font-size:12px}
+ #quiz #prompt{margin:4px 0;font-size:14px}
+ #quiz .heading h2{font-size:26px}
+ #quiz #ipa{margin:3px 0;min-height:16px;font-size:14px}
+ #quiz .option{min-height:44px;padding:8px 10px;font-size:14px}
+}
