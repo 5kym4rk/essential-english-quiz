@@ -53,3 +53,14 @@ assert.throws(()=>ctx.parseStudyStats('{invalid'));const cleaned=ctx.parseStudyS
 assert.equal(cleaned.completedSessions,0);assert.equal(cleaned.lessons['1-2'].sessions,2);assert(!cleaned.lessons['7-1']);
 const natives=process.binding('natives'),acornKey=Object.keys(natives).find(k=>/acorn\/dist\/acorn$/.test(k));if(acornKey){const parser={};vm.runInNewContext(natives[acornKey],parser);parser.acorn.parse(source,{ecmaVersion:5});}
 console.log('PASS: completed/partial/retry/mixed quizzes, duplicate protection, saved reload, blocked storage, chart lesson counts, safe parsing, ES5 syntax.');
+
+ctx.localStorage.getItem=k=>Object.prototype.hasOwnProperty.call(storage,k)?storage[k]:null;
+ctx.localStorage.setItem=(k,v)=>storage[k]=v;
+ctx.begin();assert.equal(ctx.showImages,true);assert(nodes['question-image'].querySelector('img'));
+nodes['toggle-images'].onclick();assert.equal(ctx.showImages,false);assert.equal(nodes['question-image'].hidden,true);assert.equal(nodes['question-image'].children.length,0);assert.equal(ctx.readImagePreference(),false);
+ctx.choose(0);const answerCount=ctx.answers.length,oldIndex=ctx.index;
+nodes['toggle-images'].onclick();assert(nodes['question-image'].querySelector('img'));assert.equal(ctx.answers.length,answerCount);assert.equal(ctx.index,oldIndex);assert.equal(ctx.locked,true);assert.equal(ctx.readImagePreference(),true);
+nodes['toggle-images'].onclick();ctx.advance();assert.equal(nodes['question-image'].children.length,0,'hidden preference survives next question');
+ctx.localStorage.getItem=()=>{throw Error('blocked');};ctx.localStorage.setItem=()=>{throw Error('blocked');};
+assert.equal(ctx.readImagePreference(),true);nodes['toggle-images'].onclick();assert(nodes['question-image'].querySelector('img'));
+console.log('PASS: image toggle, persistence, next-question preference, preserved answer state, blocked storage.');

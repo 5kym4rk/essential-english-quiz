@@ -82,3 +82,5 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
  .stats-overview strong{font-size:24px}
  .stats-filter{max-width:none}
 }
+
+.image-controls{text-align:right;margin:4px 0}.image-toggle{font-size:14px;padding:8px 12px;min-height:40px}.image-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}

@@ -7,6 +7,24 @@ function add(parent){for(var i=1;i<arguments.length;i++)parent.appendChild(argum
 function pad(n){return n<10?'0'+n:String(n);}
 var words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playing=null;
 var timer=null,remaining=0,pictureFrame=null;
+function readImagePreference(){try{return localStorage.getItem('wordcraft-show-images')!=='off';}catch(e){return true;}}
+var showImages=readImagePreference();
+function renderQuestionImage(){
+ var host=$('question-image'),w=queue[index];
+ empty(host);host.hidden=!showImages;
+ text('toggle-images',showImages?'\u1ea2nh: B\u1eadt':'\u1ea2nh: T\u1eaft');
+ $('toggle-images').setAttribute('aria-pressed',showImages?'true':'false');
+ if(!showImages||!w||!w.image)return;
+ var figure=document.createElement('figure');figure.className='illustration';
+ var image=document.createElement('img');image.alt='\u1ea2nh minh h\u1ecda t\u1eeb v\u1ef1ng';
+ image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
+ image.src=w.image;add(figure,image);add(host,figure);
+}
+$('toggle-images').onclick=function(){
+ showImages=!showImages;
+ try{localStorage.setItem('wordcraft-show-images',showImages?'on':'off');}catch(e){}
+ renderQuestionImage();schedulePictureFit();
+};
 function shuffle(arr){var a=arr.slice(),i,j,t;for(i=a.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function norm(s){return (s.normalize?s.normalize('NFC'):s).toLowerCase().trim();}
 function formatAnswer(s){s=s.trim();for(var i=0;i<s.length;i++){if(s.charAt(i).toUpperCase()!==s.charAt(i).toLowerCase())return s.slice(0,i)+s.charAt(i).toUpperCase()+s.slice(i+1);}return s;}
@@ -60,12 +78,7 @@ function render(){
  $('audio').hidden=mode==='vi'||!w.audio;$('audio-status').textContent='';
  $('next').disabled=true;text('next','Chọn đáp án 0–3');empty($('feedback'));empty($('options'));empty($('question-image'));
  text('answer-hint','Chọn một đáp án để xem nghĩa và ví dụ.');
- if(w.image){
-  var figure=document.createElement('figure');figure.className='illustration';
-  var image=document.createElement('img');image.alt='Ảnh minh họa từ vựng';
-  image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
-  image.src=w.image;add(figure,image);add($('question-image'),figure);
- }
+ renderQuestionImage();
  choices.forEach(function(x,i){
   var b=document.createElement('button');b.type='button';b.className='option';
   var key=document.createElement('span');key.className='key';key.textContent=i;
