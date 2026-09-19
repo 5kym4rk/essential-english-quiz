@@ -105,6 +105,6 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 .collection-grammar .image-controls,.collection-grammar #question-image,.collection-grammar #toggle-diagram{display:none!important}
 @media(max-width:680px){.collection-vocabulary.learning-words .illustration img{max-height:360px}}
 .collection-radicals #quiz{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column}
-.collection-radicals #question-image{-webkit-order:2;order:2}
+.collection-radicals.learning-words #question-image{-webkit-order:2;order:2}
 .collection-radicals #keyboard-help{-webkit-order:3;order:3}
 .collection-radicals .illustration img{max-height:none;object-position:center bottom}

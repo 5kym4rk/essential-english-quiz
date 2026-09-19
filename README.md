@@ -33,4 +33,4 @@ Regenerate Chinese data: python extract_chinese.py (requires the three user-prov
 Check English and Chinese behavior: node test-quiz.cjs and node test-chinese.cjs.
 Learning mode shows meanings immediately, supports left/right navigation, and records a completed session after all cards are viewed and Finish is pressed.
 
-Chinese image layout: grammar images and diagram controls are hidden in both learning and quiz modes. Vocabulary learning images are larger on phones. Radical images use available viewport height without a thumbnail cap; in quizzes the image follows the answer choices, and on phones fixed navigation is reserved.
+Chinese image layout: grammar images and diagram controls are hidden in both learning and quiz modes. Vocabulary learning images are larger on phones. Radical images use available viewport height without a thumbnail cap; in quizzes the image appears before the answer choices, and on phones fixed navigation is reserved.

@@ -65,7 +65,7 @@ function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
  if(quiz.hidden||!image)return;
- if(config.kind==='radicals'){
+ if(config.kind==='radicals'&&activity==='learn'){
   var panelReserve=mobile()&&(activity==='learn'||locked)?$('study-panel').getBoundingClientRect().height+12:0;
   var imageOffset=image.getBoundingClientRect().top-quiz.getBoundingClientRect().top;
   image.style.height=Math.max(80,Math.floor(viewportHeight()-imageOffset-panelReserve-15))+'px';
