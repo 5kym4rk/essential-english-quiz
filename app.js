@@ -14,6 +14,20 @@ var words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playi
 var timer=null,remaining=0,pictureFrame=null;
 function readImagePreference(){try{return localStorage.getItem('wordcraft-show-images')!=='off';}catch(e){return true;}}
 var showImages=readImagePreference();
+function readAutoReadPreference(){try{return localStorage.getItem('wordcraft-auto-read')==='on';}catch(e){return false;}}
+var autoRead=readAutoReadPreference();
+function updateAutoReadButton(){
+ text('toggle-auto-read',autoRead?'Tự đọc: Bật':'Tự đọc: Tắt');
+ $('toggle-auto-read').setAttribute('aria-pressed',autoRead?'true':'false');
+}
+function canReadCard(){return !$('quiz').hidden&&(activity==='learn'||mode==='en'||locked);}
+function maybeAutoRead(){if(autoRead&&!document.hidden&&canReadCard())playCardAudio(true);}
+$('toggle-auto-read').onclick=function(){
+ autoRead=!autoRead;try{localStorage.setItem('wordcraft-auto-read',autoRead?'on':'off');}catch(e){}
+ updateAutoReadButton();text('audio-status','');
+ if(autoRead)maybeAutoRead();else stopAudio();
+};
+updateAutoReadButton();
 function renderQuestionImage(){
  var host=$('question-image'),w=queue[index];
  empty(host);host.hidden=!showImages||config.kind==='grammar';
@@ -111,7 +125,7 @@ function render(){
   var label=document.createElement('span');label.textContent=formatAnswer(mode==='en'?x.meaning:x.word);
   add(b,key,label);b.onclick=function(){choose(i);};add($('options'),b);
  });
- requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});
+ requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});maybeAutoRead();
 }
 function choose(i){
  if(activity==='learn')return;
@@ -126,6 +140,7 @@ function choose(i){
  $('audio').hidden=!w.audio;$('next').disabled=false;
  text('score',score()+' câu đúng');text('next',index===queue.length-1?'Xem kết quả →':'Câu tiếp theo →');
  recordCompletedQuiz();
+ if(mode==='vi')maybeAutoRead();
  if(config.kind==='radicals')schedulePictureFit();
  startTimer();
 }
@@ -148,13 +163,15 @@ $('next').onclick=advance;
 $('pause-auto').onclick=function(){stopTimer();text('countdown','Đã dừng tự chuyển câu này.');};
 $('auto-next').onchange=function(){if(locked)startTimer();};
 $('change-settings').onclick=function(){stopTimer();$('setup').hidden=!$('setup').hidden;if(!$('setup').hidden)$('setup').scrollIntoView(true);};
-document.addEventListener('visibilitychange',function(){if(document.hidden)stopTimer();});
-$('audio').onclick=function(){
- var w=queue[index];if(!w||!w.audio)return;stopAudio();playing=new Audio(w.audio);
- function failed(){text('audio-status','Không phát được âm thanh. Hãy thử lại.');}
+document.addEventListener('visibilitychange',function(){if(document.hidden){stopTimer();stopAudio();}});
+function playCardAudio(automatic){
+ var w=queue[index];if(!w||!w.audio)return;stopAudio();text('audio-status','');playing=new Audio(w.audio);
+ var currentAudio=playing;
+ function failed(){if(playing!==currentAudio)return;text('audio-status',automatic?'Chạm nút ♪ để nghe nếu trình duyệt chặn tự phát.':'Không phát được âm thanh. Hãy thử lại.');}
  playing.onerror=failed;
  try{var result=playing.play();if(result&&typeof result['catch']==='function')result['catch'](failed);}catch(e){failed();}
-};
+}
+$('audio').onclick=function(){playCardAudio(false);};
 document.addEventListener('keydown',function(e){
  var tag=e.target.tagName;
  if(['SELECT','INPUT','TEXTAREA'].indexOf(tag)!==-1||e.ctrlKey||e.altKey||e.metaKey||$('quiz').hidden||!$('stats-panel').hidden)return;
@@ -309,7 +326,7 @@ function renderLearning(){
  $('audio').hidden=!w.audio;text('audio-status','');$('next').disabled=false;
  text('next',index===queue.length-1?'Hoàn tất lượt học ✓':'Từ tiếp theo →');
  text('keyboard-help','← Từ trước · → Từ tiếp theo');
- renderQuestionImage();requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});
+ renderQuestionImage();requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});maybeAutoRead();
 }
 function previousWord(){if(activity!=='learn'||index===0)return;index--;render();}
 $('previous-word').onclick=previousWord;

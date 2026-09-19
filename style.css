@@ -108,3 +108,5 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 .collection-radicals.learning-words #question-image{-webkit-order:2;order:2}
 .collection-radicals #keyboard-help{-webkit-order:3;order:3}
 .collection-radicals .illustration img{max-height:none;object-position:center bottom}
+
+.auto-read-toggle{font-size:14px;padding:8px 12px;min-height:40px;margin:6px 0}.auto-read-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}

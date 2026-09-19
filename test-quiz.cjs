@@ -83,3 +83,19 @@ ctx.readStudyStats();assert.equal(ctx.studyStats.readingSessions,previousReading
 ctx.begin();key('ArrowRight');ctx.begin();assert.equal(ctx.studyStats.readingSessions,previousReading+1,'unfinished reading is not counted');
 nodes.activity.value='quiz';ctx.updateActivitySetup();ctx.begin();assert.equal(ctx.activity,'quiz');assert.equal(nodes.options.hidden,false);assert.equal(nodes['learn-content'].hidden,true);key('0');assert.equal(ctx.answers.length,1);
 console.log('PASS: learning meanings, full lesson order, arrow navigation/bounds, no quiz answers/timer, completed reading statistics, quiz switching.');
+
+let autoPlays=0,autoPauses=0;
+ctx.Audio=function(){this.play=()=>{autoPlays++;return undefined;};this.pause=()=>{autoPauses++;};};
+ctx.document.hidden=false;nodes.activity.value='learn';nodes.book.value='1';nodes.unit.value='1';ctx.autoRead=false;
+ctx.begin();assert.equal(autoPlays,0);
+nodes['toggle-auto-read'].onclick();assert.equal(autoPlays,1);assert.equal(ctx.readAutoReadPreference(),true);
+ctx.advance();assert.equal(autoPlays,2);assert(autoPauses>0);
+nodes['toggle-auto-read'].onclick();ctx.advance();assert.equal(autoPlays,2);assert.equal(ctx.readAutoReadPreference(),false);
+nodes.activity.value='quiz';nodes.mode.value='vi';ctx.autoRead=true;ctx.begin();assert.equal(autoPlays,2,'reverse quiz does not reveal word through audio');
+ctx.choose(0);assert.equal(autoPlays,3);ctx.advance();assert.equal(autoPlays,3);
+nodes.mode.value='en';ctx.begin();assert.equal(autoPlays,4);
+ctx.document.hidden=true;events.visibilitychange();ctx.maybeAutoRead();assert.equal(autoPlays,4);ctx.document.hidden=false;
+const card=ctx.queue[ctx.index],sound=card.audio;delete card.audio;ctx.maybeAutoRead();assert.equal(autoPlays,4);card.audio=sound;
+ctx.Audio=function(){this.play=()=>({'catch':f=>f()});this.pause=()=>{};};ctx.playCardAudio(true);assert(nodes['audio-status'].textContent.length>0,'blocked autoplay gives manual playback hint');
+ctx.localStorage.getItem=()=>{throw Error('blocked');};ctx.localStorage.setItem=()=>{throw Error('blocked');};assert.equal(ctx.readAutoReadPreference(),false);nodes['toggle-auto-read'].onclick();
+console.log('PASS: auto-read toggle, saved preference, learning navigation, quiz directions, missing audio, background stop, blocked playback/storage.');
