@@ -99,3 +99,5 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 }
 
 @media(min-width:390px) and (max-width:680px){.learning-words .illustration img{max-height:260px}}
+
+.subjects{max-width:1250px;margin:0 auto;padding:0 40px 14px;display:flex;flex-wrap:wrap}.subjects a{display:block;color:#214632;background:#fff;border:1px solid #c9d6ca;border-radius:9px;padding:10px 14px;margin:0 8px 8px 0;text-decoration:none;font-size:14px}.subjects a:hover{background:#edf5e5}#learn-example{white-space:pre-line}.chinese .heading h2{line-height:1.5;letter-spacing:0;word-break:break-word}.chinese #meta{line-height:1.6}.chinese .stats-row-label>span{line-height:1.5}.chinese #toggle-diagram{margin:8px 0}@media(max-width:680px){.subjects{padding:0 20px 6px}.subjects a{padding:9px 10px}.studying .subjects{display:none}}

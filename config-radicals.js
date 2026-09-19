@@ -1,0 +1,1 @@
+window.wordcraftConfig={"dataFile":"chinese-radicals.json","statsKey":"wordcraft-chinese-radicals-v1","historyKey":"wordcraft-last-radicals","language":"Ti\u1ebfng Trung","bookNames":{"1":"B\u1ed9 th\u1ee7"},"unitNames":{},"kind":"radicals","total":215};

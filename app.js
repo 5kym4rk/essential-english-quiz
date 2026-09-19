@@ -5,6 +5,10 @@ function empty(node){while(node.firstChild)node.removeChild(node.firstChild);}
 function text(id,value){$(id).textContent=value;}
 function add(parent){for(var i=1;i<arguments.length;i++)parent.appendChild(arguments[i]);}
 function pad(n){return n<10?'0'+n:String(n);}
+var config=window.wordcraftConfig||{},showDiagram=false;
+function bookName(n){return config.bookNames?config.bookNames[n]:'Bộ '+n;}
+function unitName(b,u){return config.unitNames&&config.unitNames[b+'-'+u]?'NP '+u+' · '+config.unitNames[b+'-'+u]:'Bài '+pad(u);}
+function wordMeta(w){return bookName(w.book)+' · '+unitName(w.book,w.unit);}
 var words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playing=null;
 var timer=null,remaining=0,pictureFrame=null;
 function readImagePreference(){try{return localStorage.getItem('wordcraft-show-images')!=='off';}catch(e){return true;}}
@@ -14,11 +18,11 @@ function renderQuestionImage(){
  empty(host);host.hidden=!showImages;
  text('toggle-images',showImages?'\u1ea2nh: B\u1eadt':'\u1ea2nh: T\u1eaft');
  $('toggle-images').setAttribute('aria-pressed',showImages?'true':'false');
- if(!showImages||!w||!w.image)return;
+ if(!showImages||!w||!(w.image||w.diagram))return;
  var figure=document.createElement('figure');figure.className='illustration';
  var image=document.createElement('img');image.alt='\u1ea2nh minh h\u1ecda t\u1eeb v\u1ef1ng';
  image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
- image.src=w.image;add(figure,image);add(host,figure);
+ image.src=showDiagram&&w.diagram?w.diagram:(w.image||w.diagram);add(figure,image);add(host,figure);
 }
 $('toggle-images').onclick=function(){
  showImages=!showImages;
@@ -43,7 +47,7 @@ function startTimer(){
  function update(){text('countdown',(index===queue.length-1?'Xem kết quả sau ':'Câu tiếp theo sau ')+remaining+' giây');}
  update();timer=setInterval(function(){if(document.hidden){stopTimer();return;}remaining--;if(remaining<=0){advance();}else update();},1000);
 }
-function history(){try{var s=JSON.parse(localStorage.getItem('wordcraft-last'));if(s)text('history','Lượt gần nhất: '+s.correct+'/'+s.total+' câu đúng');}catch(e){}}
+function history(){try{var s=JSON.parse(localStorage.getItem(config.historyKey||'wordcraft-last'));if(s)text('history','Lượt gần nhất: '+s.correct+'/'+s.total+' câu đúng');}catch(e){}}
 function score(){return answers.filter(function(a){return a.correct;}).length;}
 function begin(retry){
  stopTimer();stopAudio();mode=$('mode').value;activity=retry?'quiz':$('activity').value;learnSeen={};
@@ -74,15 +78,16 @@ function schedulePictureFit(){if(pictureFrame)cancelAnimationFrame(pictureFrame)
 window.addEventListener('resize',schedulePictureFit);
 if(window.visualViewport)window.visualViewport.addEventListener('resize',schedulePictureFit);
 function render(){
+ showDiagram=false;
  if(activity==='learn'){renderLearning();return;}
  document.body.classList.remove('learning-words');
  $('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
  text('keyboard-help','Ph\u00edm 0\u20133 \u0111\u1ec3 ch\u1ecdn \u00b7 Enter \u0111\u1ec3 ti\u1ebfp t\u1ee5c');
- stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,words,mode);
+ stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,config.language?words.filter(function(x){return x.book===w.book;}):words,mode);
  text('session-label','CÂU '+(index+1)+' / '+queue.length);text('score',score()+' câu đúng');
  $('bar').style.width=(index/queue.length*100)+'%';
- text('meta','Bộ '+w.book+' · Bài '+pad(w.unit));
- text('prompt',mode==='en'?'Chọn nghĩa tiếng Việt phù hợp':'Chọn từ tiếng Anh phù hợp');
+ text('meta',wordMeta(w));
+ text('prompt',mode==='en'?'Chọn nghĩa tiếng Việt phù hợp':'Chọn '+(config.language||'tiếng Anh')+' phù hợp');
  text('question',mode==='en'?w.word:w.meaning);text('ipa',mode==='en'?w.ipa:'');
  $('audio').hidden=mode==='vi'||!w.audio;$('audio-status').textContent='';
  $('next').disabled=true;text('next','Chọn đáp án 0–3');empty($('feedback'));empty($('options'));empty($('question-image'));
@@ -121,7 +126,7 @@ function finish(){
  text('result-score',correct+'/'+queue.length);text('result-message','Bạn trả lời đúng '+Math.round(correct/queue.length*100)+'%. '+(wrong.length?'Ôn lại các từ dưới đây để nhớ chắc hơn.':'Bạn đã trả lời đúng tất cả các câu!'));
  $('retry').hidden=!wrong.length;empty($('review'));
  wrong.forEach(function(a){var div=document.createElement('div');div.className='review-item';var b=document.createElement('strong');b.textContent=a.word.word+' — '+a.word.meaning;var s=document.createElement('span');s.textContent='Bạn chọn: '+formatAnswer(mode==='en'?a.selected.meaning:a.selected.word);add(div,b,s);add($('review'),div);});
- try{localStorage.setItem('wordcraft-last',JSON.stringify({correct:correct,total:queue.length}));}catch(e){}
+ try{localStorage.setItem(config.historyKey||'wordcraft-last',JSON.stringify({correct:correct,total:queue.length}));}catch(e){}
  history();$('result').scrollIntoView(true);
 }
 $('settings').onsubmit=function(e){e.preventDefault();begin();};$('again').onclick=function(){begin();};
@@ -151,24 +156,28 @@ document.addEventListener('keydown',function(e){
  if(/^[0-3]$/.test(key)){e.preventDefault();choose(Number(key));}
  else if(key==='Enter'&&locked){e.preventDefault();advance();}
 });
-for(var book=1;book<=6;book++)$('book').add(new Option('Bộ '+book+' · 600 từ',book));
+if(config.bookNames){
+ empty($('book'));$('book').add(new Option('Tất cả cấp / nhóm','0'));empty($('stats-book'));
+ Object.keys(config.bookNames).forEach(function(b){$('book').add(new Option(bookName(b),b));$('stats-book').add(new Option(bookName(b),b));});
+ $('stats-book').value='1';
+}else for(var book=1;book<=6;book++)$('book').add(new Option('Bộ '+book+' · 600 từ',book));
 function updateUnits(){
  var old=$('unit').value,seen={},units=[];
  words.forEach(function(w){if((!Number($('book').value)||w.book===Number($('book').value))&&!seen[w.unit]){seen[w.unit]=true;units.push(w.unit);}});
  units.sort(function(a,b){return a-b;});empty($('unit'));$('unit').add(new Option('Tất cả bài','0'));
- units.forEach(function(i){$('unit').add(new Option('Bài '+pad(i),i));});if(units.indexOf(Number(old))!==-1)$('unit').value=old;
+ units.forEach(function(i){$('unit').add(new Option(unitName(Number($('book').value),i),i));});if(units.indexOf(Number(old))!==-1)$('unit').value=old;
 }
 $('book').onchange=updateUnits;
 function loadData(){
- var request=new XMLHttpRequest();request.open('GET','data.json',true);request.timeout=60000;
+ var request=new XMLHttpRequest();request.open('GET',config.dataFile||'data.json',true);request.timeout=60000;
  function failed(){text('total','Không tải được dữ liệu. Kiểm tra mạng rồi tải lại trang.');$('reload-data').hidden=false;}
- request.onload=function(){if(request.status<200||request.status>=300){failed();return;}try{words=JSON.parse(request.responseText);updateUnits();text('total','3.600 từ · 6 bộ · 179 nhóm bài');$('start').disabled=false;$('open-stats').disabled=false;$('reload-data').hidden=true;history();}catch(e){failed();}};
+ request.onload=function(){if(request.status<200||request.status>=300){failed();return;}try{words=JSON.parse(request.responseText);updateUnits();text('total',config.language?words.length+' thẻ · '+lessonCatalog().length+' bài':'3.600 từ · 6 bộ · 179 nhóm bài');$('start').disabled=false;$('open-stats').disabled=false;$('reload-data').hidden=true;history();}catch(e){failed();}};
  request.onerror=failed;request.ontimeout=failed;request.send();
 }
 $('reload-data').onclick=loadData;
 
 // Study counts are per completed quiz, once per lesson represented in that quiz.
-var statsKey='wordcraft-study-stats-v1',studyStats={version:1,completedSessions:0,lessons:{}};
+var statsKey=config.statsKey||'wordcraft-study-stats-v1',studyStats={version:1,completedSessions:0,lessons:{}};
 var statsMemoryOnly=false;
 var sessionRecorded=false,statsStorageWarning='',statsScrollTop=0,statsWasStudying=false;
 function safeCount(value){return typeof value==='number'&&isFinite(value)&&value>=0?Math.floor(value):0;}
@@ -178,7 +187,8 @@ function parseStudyStats(raw){
  if(!parsed||parsed.version!==1||!parsed.lessons||typeof parsed.lessons!=='object')throw new Error('Invalid study history');
  var clean={version:1,completedSessions:safeCount(parsed.completedSessions),readingSessions:safeCount(parsed.readingSessions),lessons:{}};
  Object.keys(parsed.lessons).forEach(function(key){
-  if(!/^[1-6]-(?:[1-9]|[12][0-9]|30)$/.test(key))return;
+  if(config.language){if(!/^[1-6]-[1-9][0-9]{0,3}$/.test(key))return;}
+  else if(!/^[1-6]-(?:[1-9]|[12][0-9]|30)$/.test(key))return;
   var entry=parsed.lessons[key];
   if(!entry||typeof entry!=='object')return;
   var sessions=safeCount(entry.sessions);
@@ -231,14 +241,14 @@ function renderStudyStats(){
  });
  text('stats-learned',allLearned+' / '+catalog.length);
  text('stats-sessions',String(studyStats.completedSessions+safeCount(studyStats.readingSessions)));
- text('stats-book-summary','Bộ '+selected+' · '+bookLearned+' / '+rows.length+' bài đã luyện');
+ text('stats-book-summary',bookName(selected)+' · '+bookLearned+' / '+rows.length+' bài đã luyện');
  text('stats-storage-note',statsStorageWarning||'Lịch sử lưu trong trình duyệt trên thiết bị này, không đồng bộ giữa các máy. Xóa dữ liệu trình duyệt sẽ xóa thống kê.');
  $('stats-empty').hidden=studyStats.completedSessions+safeCount(studyStats.readingSessions)>0;
  empty($('stats-chart'));
  rows.forEach(function(row){
   var item=document.createElement('li');item.className='stats-row'+(row.count?'':' stats-unseen');
   var label=document.createElement('div');label.className='stats-row-label';
-  var name=document.createElement('span');name.textContent='Bài '+pad(row.unit);
+  var name=document.createElement('span');name.textContent=unitName(selected,row.unit);
   var value=document.createElement('strong');value.textContent=row.count?row.count+' lượt':'Chưa học · 0 lượt';
   add(label,name,value);
   var track=document.createElement('div');track.className='stats-track';track.setAttribute('aria-hidden','true');
@@ -280,7 +290,8 @@ function renderLearning(){
  empty($('options'));empty($('feedback'));text('answer-hint','Dùng phím ← / → để chuyển từ.');
  text('session-label','TỪ '+(index+1)+' / '+queue.length);text('score','HỌC TỪ');
  $('bar').style.width=((index+1)/queue.length*100)+'%';
- text('meta','Bộ '+w.book+' · Bài '+pad(w.unit));text('prompt','Đọc từ, nghĩa và ví dụ');
+ text('meta',wordMeta(w));text('prompt','Đọc từ, nghĩa và ví dụ');
+ if($('toggle-diagram')){$('toggle-diagram').hidden=!w.diagram; text('toggle-diagram','Xem sơ đồ / cách viết');}
  text('question',w.word);text('ipa',w.ipa);text('learn-meaning',w.meaning);text('learn-example',w.explanation);
  $('audio').hidden=!w.audio;text('audio-status','');$('next').disabled=false;
  text('next',index===queue.length-1?'Hoàn tất lượt học ✓':'Từ tiếp theo →');
@@ -310,5 +321,6 @@ function recordCompletedReading(){
  catch(e){statsMemoryOnly=true;statsStorageWarning='Không lưu được lịch sử. Thống kê tạm giữ trong lần mở trang này.';}
 }
 
+if($('toggle-diagram'))$('toggle-diagram').onclick=function(){showDiagram=!showDiagram;showImages=true;renderQuestionImage();schedulePictureFit();text('toggle-diagram',showDiagram?'Xem ảnh minh họa':'Xem sơ đồ / cách viết');};
 updateActivitySetup();
 loadData();

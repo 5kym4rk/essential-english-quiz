@@ -1,0 +1,1 @@
+window.wordcraftConfig={"dataFile":"chinese-vocabulary.json","statsKey":"wordcraft-chinese-vocabulary-v1","historyKey":"wordcraft-last-vocabulary","language":"Ti\u1ebfng Trung","bookNames":{"1":"HSK 1","2":"HSK 2","3":"HSK 3","4":"HSK 4","5":"HSK 5","6":"HSK 6"},"unitNames":{},"kind":"vocabulary","total":4994};

@@ -18,3 +18,17 @@ Run regression checks: node test-quiz.cjs
 ## Lesson statistics
 The statistics screen uses accessible text and CSS horizontal bars, with one book at a time. The final answer in a completed quiz records one session for each distinct book/unit represented in that quiz. Retries count as new sessions; abandoned quizzes do not count. A session with only part of a lesson is practice, not proof of mastering every word. Duplicate result rendering does not add another count.
 Statistics use localStorage key wordcraft-study-stats-v1 and begin with this release; the prior last-score record has no unit history to reconstruct. Counts are local to one browser/device. If storage is blocked, in-memory counts and a visible warning preserve quiz functionality.
+
+
+## Chinese collections
+The navigation opens independent vocabulary, grammar and radical pages. Each page loads only its own JSON; images/audio load on demand. The English dataset and saved history are unchanged. Chinese statistics and last results have a separate localStorage key for each collection.
+
+- Vocabulary: 4,994 original HSK-tagged notes, 253 lessons of up to 20 cards within each level; 3,676 audio clips and 4,991 images. Missing audio is not synthesized. Twenty-one empty short meanings were recovered from each card dictionary, and two translations were supplied: ???? = Kh?ng th?m ?? m?t; coi th??ng, ?? = Nh?n b?nh.
+- Grammar: 4,800 original example sentences grouped by the 450 original grammar-point IDs and HSK tags. Structure, usage, pinyin, Vietnamese translation, original sentence audio, illustration and alternate grammar diagram are included.
+- Radicals: 215 learning notes, including source variant 80.1; the blank-front mnemonic index note is excluded. Groups follow source order in blocks of 20. Original illustration, writing diagram, audio and mnemonic text are included.
+
+The diagram button switches the learning image between illustration and grammar/writing diagram. Source markup/scripts are never executed. Only referenced media are copied using content hashes to deduplicate them. Data preserves source wording, so source translation/pinyin inaccuracies may remain.
+
+Regenerate Chinese data: python extract_chinese.py (requires the three user-provided APKG files in Downloads).
+Check English and Chinese behavior: node test-quiz.cjs and node test-chinese.cjs.
+Learning mode shows meanings immediately, supports left/right navigation, and records a completed session after all cards are viewed and Finish is pressed.
