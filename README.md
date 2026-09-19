@@ -23,7 +23,7 @@ Statistics use localStorage key wordcraft-study-stats-v1 and begin with this rel
 ## Chinese collections
 The navigation opens independent vocabulary, grammar and radical pages. Each page loads only its own JSON; images/audio load on demand. The English dataset and saved history are unchanged. Chinese statistics and last results have a separate localStorage key for each collection.
 
-- Vocabulary: 4,994 original HSK-tagged notes, 253 lessons of up to 20 cards within each level; 3,676 audio clips and 4,991 images. Missing audio is not synthesized. Twenty-one empty short meanings were recovered from each card dictionary, and two translations were supplied: ???? = Kh?ng th?m ?? m?t; coi th??ng, ?? = Nh?n b?nh.
+- Vocabulary: 4,994 original HSK-tagged notes, 253 lessons of up to 20 cards within each level; 3,676 audio clips and 4,991 images. Missing audio is not synthesized. Twenty-one empty short meanings were recovered from each card dictionary, and two translations were supplied: 不屑一顾 = Không thèm để mắt; coi thường, 馅儿 = Nhân bánh.
 - Grammar: 4,800 original example sentences grouped by the 450 original grammar-point IDs and HSK tags. Structure, usage, pinyin, Vietnamese translation, original sentence audio, illustration and alternate grammar diagram are included.
 - Radicals: 215 learning notes, including source variant 80.1; the blank-front mnemonic index note is excluded. Groups follow source order in blocks of 20. Original illustration, writing diagram, audio and mnemonic text are included.
 
