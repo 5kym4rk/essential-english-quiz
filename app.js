@@ -58,7 +58,10 @@ function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
  if(quiz.hidden||!image)return;
- if(activity==='learn'){image.style.height=(mobile()?120:Math.max(320,Math.min(520,Math.round(viewportHeight()*0.5))))+'px';return;}
+ if(activity==='learn'){
+  var learningHeight=mobile()?(window.matchMedia('(min-width:390px)').matches?Math.min(260,Math.round(document.documentElement.clientWidth*0.56)):120):Math.max(320,Math.min(520,Math.round(viewportHeight()*0.5)));
+  image.style.height=learningHeight+'px';return;
+ }
  if(!last)return;
  var reserve=mobile()?$('study-panel').getBoundingClientRect().height+16:16;
  // After an answer, keep the picture stable while the mobile feedback sheet opens.

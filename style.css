@@ -97,3 +97,5 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
  .learning-words #quiz{padding-bottom:100px}
  #learn-meaning{font-size:21px}.learning-words .illustration img{max-height:120px}
 }
+
+@media(min-width:390px) and (max-width:680px){.learning-words .illustration img{max-height:260px}}
