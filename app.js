@@ -46,9 +46,9 @@ function startTimer(){
 function history(){try{var s=JSON.parse(localStorage.getItem('wordcraft-last'));if(s)text('history','Lượt gần nhất: '+s.correct+'/'+s.total+' câu đúng');}catch(e){}}
 function score(){return answers.filter(function(a){return a.correct;}).length;}
 function begin(retry){
- stopTimer();stopAudio();mode=$('mode').value;
+ stopTimer();stopAudio();mode=$('mode').value;activity=retry?'quiz':$('activity').value;learnSeen={};
  var pool=words.filter(function(w){return (!Number($('book').value)||w.book===Number($('book').value))&&(!Number($('unit').value)||w.unit===Number($('unit').value));});
- queue=shuffle(retry||pool).slice(0,retry?retry.length:Number($('count').value));
+ queue=activity==='learn'?pool.slice():shuffle(retry||pool).slice(0,retry?retry.length:Number($('count').value));
  if(!queue.length)return;
  index=0;answers=[];sessionRecorded=false;$('study-stats').hidden=false;document.body.classList.add('studying');$('setup').hidden=true;$('change-settings').hidden=false;
  $('welcome').hidden=true;$('result').hidden=true;$('quiz').hidden=false;$('study-panel').hidden=false;render();
@@ -57,7 +57,9 @@ function viewportHeight(){return window.visualViewport?window.visualViewport.hei
 function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
- if(quiz.hidden||!image||!last)return;
+ if(quiz.hidden||!image)return;
+ if(activity==='learn'){image.style.height=(mobile()?120:220)+'px';return;}
+ if(!last)return;
  var reserve=mobile()?$('study-panel').getBoundingClientRect().height+16:16;
  // After an answer, keep the picture stable while the mobile feedback sheet opens.
  if(locked&&mobile())return;
@@ -69,6 +71,10 @@ function schedulePictureFit(){if(pictureFrame)cancelAnimationFrame(pictureFrame)
 window.addEventListener('resize',schedulePictureFit);
 if(window.visualViewport)window.visualViewport.addEventListener('resize',schedulePictureFit);
 function render(){
+ if(activity==='learn'){renderLearning();return;}
+ document.body.classList.remove('learning-words');
+ $('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
+ text('keyboard-help','Ph\u00edm 0\u20133 \u0111\u1ec3 ch\u1ecdn \u00b7 Enter \u0111\u1ec3 ti\u1ebfp t\u1ee5c');
  stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,words,mode);
  text('session-label','CÂU '+(index+1)+' / '+queue.length);text('score',score()+' câu đúng');
  $('bar').style.width=(index/queue.length*100)+'%';
@@ -88,6 +94,7 @@ function render(){
  requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});
 }
 function choose(i){
+ if(activity==='learn')return;
  if(locked||!choices[i])return;locked=true;document.body.classList.add('answered');
  var w=queue[index],correct=choices[i].id===w.id;
  answers.push({word:w,correct:correct,selected:choices[i]});
@@ -101,7 +108,7 @@ function choose(i){
  recordCompletedQuiz();
  startTimer();
 }
-function advance(){if(!locked)return;stopTimer();index++;if(index<queue.length)render();else finish();}
+function advance(){if(activity==='learn'){if(index<queue.length-1){index++;render();}else finishLearning();return;}if(!locked)return;stopTimer();index++;if(index<queue.length)render();else finish();}
 function finish(){
  recordCompletedQuiz();$('study-stats').hidden=true;
  stopTimer();stopAudio();document.body.classList.remove('studying');document.body.classList.remove('answered');
@@ -132,6 +139,12 @@ document.addEventListener('keydown',function(e){
  if(['SELECT','INPUT','TEXTAREA'].indexOf(tag)!==-1||e.ctrlKey||e.altKey||e.metaKey||$('quiz').hidden||!$('stats-panel').hidden)return;
  var key=e.key;
  if(!key){var code=e.which||e.keyCode;key=code>=96&&code<=105?String(code-96):code===13?'Enter':String.fromCharCode(code);}
+ if(activity==='learn'){
+  var code=e.which||e.keyCode;
+  if(key==='ArrowRight'||key==='Right'||code===39){e.preventDefault();if(!e.repeat)advance();}
+  else if(key==='ArrowLeft'||key==='Left'||code===37){e.preventDefault();if(!e.repeat)previousWord();}
+  return;
+ }
  if(/^[0-3]$/.test(key)){e.preventDefault();choose(Number(key));}
  else if(key==='Enter'&&locked){e.preventDefault();advance();}
 });
@@ -160,13 +173,13 @@ function parseStudyStats(raw){
  if(!raw)return {version:1,completedSessions:0,lessons:{}};
  var parsed=JSON.parse(raw);
  if(!parsed||parsed.version!==1||!parsed.lessons||typeof parsed.lessons!=='object')throw new Error('Invalid study history');
- var clean={version:1,completedSessions:safeCount(parsed.completedSessions),lessons:{}};
+ var clean={version:1,completedSessions:safeCount(parsed.completedSessions),readingSessions:safeCount(parsed.readingSessions),lessons:{}};
  Object.keys(parsed.lessons).forEach(function(key){
   if(!/^[1-6]-(?:[1-9]|[12][0-9]|30)$/.test(key))return;
   var entry=parsed.lessons[key];
   if(!entry||typeof entry!=='object')return;
   var sessions=safeCount(entry.sessions);
-  if(sessions)clean.lessons[key]={sessions:sessions};
+  var reading=safeCount(entry.readingSessions);if(sessions||reading)clean.lessons[key]={sessions:sessions,readingSessions:reading};
  });
  return clean;
 }
@@ -183,7 +196,7 @@ function readStudyStats(){
  return studyStats;
 }
 function recordCompletedQuiz(){
- if(sessionRecorded||!queue.length||answers.length!==queue.length)return;
+ if(activity==='learn'||sessionRecorded||!queue.length||answers.length!==queue.length)return;
  sessionRecorded=true;
  // Read the latest saved totals before adding this quiz.
  var current=readStudyStats(),seen={};
@@ -209,15 +222,15 @@ function renderStudyStats(){
  var catalog=lessonCatalog(),selected=Number($('stats-book').value)||1;
  var allLearned=0,bookLearned=0,rows=[],maximum=1;
  catalog.forEach(function(lesson){
-  var count=studyStats.lessons[lesson.key]?studyStats.lessons[lesson.key].sessions:0;
+  var count=studyStats.lessons[lesson.key]?(safeCount(studyStats.lessons[lesson.key].sessions)+safeCount(studyStats.lessons[lesson.key].readingSessions)):0;
   if(count)allLearned++;
   if(lesson.book===selected){rows.push({unit:lesson.unit,count:count});if(count)bookLearned++;maximum=Math.max(maximum,count);}
  });
  text('stats-learned',allLearned+' / '+catalog.length);
- text('stats-sessions',String(studyStats.completedSessions));
+ text('stats-sessions',String(studyStats.completedSessions+safeCount(studyStats.readingSessions)));
  text('stats-book-summary','Bộ '+selected+' · '+bookLearned+' / '+rows.length+' bài đã luyện');
  text('stats-storage-note',statsStorageWarning||'Lịch sử lưu trong trình duyệt trên thiết bị này, không đồng bộ giữa các máy. Xóa dữ liệu trình duyệt sẽ xóa thống kê.');
- $('stats-empty').hidden=studyStats.completedSessions>0;
+ $('stats-empty').hidden=studyStats.completedSessions+safeCount(studyStats.readingSessions)>0;
  empty($('stats-chart'));
  rows.forEach(function(row){
   var item=document.createElement('li');item.className='stats-row'+(row.count?'':' stats-unseen');
@@ -249,4 +262,50 @@ $('result-stats').onclick=openStudyStats;
 $('close-stats').onclick=closeStudyStats;
 $('stats-book').onchange=renderStudyStats;
 
+
+var activity='quiz',learnSeen={};
+function updateActivitySetup(){
+ var learning=$('activity').value==='learn';
+ $('quiz-settings').hidden=learning;$('count-settings').hidden=learning;
+ text('start',learning?'Bắt đầu học từ →':'Bắt đầu trắc nghiệm →');
+}
+$('activity').onchange=updateActivitySetup;
+function renderLearning(){
+ stopTimer();stopAudio();locked=false;choices=[];var w=queue[index];learnSeen[w.id]=true;
+ document.body.classList.add('learning-words');document.body.classList.remove('answered');
+ $('options').hidden=true;$('learn-content').hidden=false;$('previous-word').hidden=false;$('previous-word').disabled=index===0;
+ empty($('options'));empty($('feedback'));text('answer-hint','Dùng phím ← / → để chuyển từ.');
+ text('session-label','TỪ '+(index+1)+' / '+queue.length);text('score','HỌC TỪ');
+ $('bar').style.width=((index+1)/queue.length*100)+'%';
+ text('meta','Bộ '+w.book+' · Bài '+pad(w.unit));text('prompt','Đọc từ, nghĩa và ví dụ');
+ text('question',w.word);text('ipa',w.ipa);text('learn-meaning',w.meaning);text('learn-example',w.explanation);
+ $('audio').hidden=!w.audio;text('audio-status','');$('next').disabled=false;
+ text('next',index===queue.length-1?'Hoàn tất lượt học ✓':'Từ tiếp theo →');
+ text('keyboard-help','← Từ trước · → Từ tiếp theo');
+ renderQuestionImage();requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});
+}
+function previousWord(){if(activity!=='learn'||index===0)return;index--;render();}
+$('previous-word').onclick=previousWord;
+function finishLearning(){
+ stopTimer();stopAudio();recordCompletedReading();
+ document.body.classList.remove('studying');document.body.classList.remove('learning-words');document.body.classList.remove('answered');
+ $('study-panel').hidden=true;$('setup').hidden=false;$('change-settings').hidden=true;$('study-stats').hidden=true;
+ $('quiz').hidden=true;$('result').hidden=false;$('retry').hidden=true;empty($('review'));
+ text('session-label','HOÀN TẤT HỌC TỪ');text('result-score',queue.length+' từ');
+ text('result-message','Bạn đã xem hết nghĩa và ví dụ của lượt học này. Chọn Trắc nghiệm khi muốn tự kiểm tra.');
+ $('bar').style.width='100%';$('result').scrollIntoView(true);
+}
+function recordCompletedReading(){
+ if(sessionRecorded||!queue.length||Object.keys(learnSeen).length!==queue.length)return;
+ sessionRecorded=true;var current=readStudyStats(),seen={};
+ queue.forEach(function(w){var key=w.book+'-'+w.unit;if(seen[key])return;seen[key]=true;
+  if(!current.lessons[key])current.lessons[key]={sessions:0};
+  current.lessons[key].readingSessions=safeCount(current.lessons[key].readingSessions)+1;
+ });
+ current.readingSessions=safeCount(current.readingSessions)+1;
+ try{localStorage.setItem(statsKey,JSON.stringify(current));statsStorageWarning='';statsMemoryOnly=false;}
+ catch(e){statsMemoryOnly=true;statsStorageWarning='Không lưu được lịch sử. Thống kê tạm giữ trong lần mở trang này.';}
+}
+
+updateActivitySetup();
 loadData();

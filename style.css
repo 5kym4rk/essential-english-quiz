@@ -84,3 +84,16 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 }
 
 .image-controls{text-align:right;margin:4px 0}.image-toggle{font-size:14px;padding:8px 12px;min-height:40px}.image-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}
+
+#learn-meaning{font-size:23px;font-weight:600;line-height:1.5;margin:12px 0}
+#learn-example{font-size:16px;line-height:1.7;color:#607467;margin:12px 0}
+#previous-word{min-height:44px;margin:8px 0}
+.learning-words .illustration img{max-height:220px}
+@media(max-width:680px){
+ .studying.learning-words:not(.answered) #study-panel{display:block}
+ .learning-words #study-panel #feedback,.learning-words #answer-hint{display:none}
+ .learning-words #previous-word{margin:0 8px 0 0;flex:0 0 auto}
+ .learning-words #study-panel #next{flex:1 1 100px}
+ .learning-words #quiz{padding-bottom:100px}
+ #learn-meaning{font-size:21px}.learning-words .illustration img{max-height:120px}
+}

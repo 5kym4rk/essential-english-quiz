@@ -11,7 +11,7 @@ class El{
 }
 const nodes={};ids.forEach(id=>nodes[id]=new El('div'));
 nodes['stats-panel'].hidden=true;nodes['quiz'].hidden=true;
-nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes.count.value='10';nodes['auto-next'].value='0';
+nodes.activity.value='quiz';nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes.count.value='10';nodes['auto-next'].value='0';
 const events={},intervals=new Map();let timerid=0;
 const ctx={console,JSON,Math,Date,document:{hidden:false,body:new El('body'),getElementById:id=>{assert(nodes[id],id);return nodes[id];},createElement:tag=>new El(tag),addEventListener:(k,f)=>events[k]=f},window:{innerHeight:720,matchMedia:()=>({matches:false}),addEventListener(){},scrollTo(){}},localStorage:{getItem(){return null;},setItem(){}},Option:function(t,v){this.textContent=t;this.value=v;},XMLHttpRequest:function(){this.open=()=>{};this.send=()=>{this.status=200;this.responseText=JSON.stringify(data);this.onload();};},Audio:function(){this.play=()=>undefined;this.pause=()=>{};},requestAnimationFrame:f=>{f();return 1;},cancelAnimationFrame(){},setInterval:f=>{intervals.set(++timerid,f);return timerid;},clearInterval:id=>intervals.delete(id)};
 vm.createContext(ctx);vm.runInContext(source,ctx);
@@ -64,3 +64,22 @@ nodes['toggle-images'].onclick();ctx.advance();assert.equal(nodes['question-imag
 ctx.localStorage.getItem=()=>{throw Error('blocked');};ctx.localStorage.setItem=()=>{throw Error('blocked');};
 assert.equal(ctx.readImagePreference(),true);nodes['toggle-images'].onclick();assert(nodes['question-image'].querySelector('img'));
 console.log('PASS: image toggle, persistence, next-question preference, preserved answer state, blocked storage.');
+
+ctx.localStorage.getItem=k=>Object.prototype.hasOwnProperty.call(storage,k)?storage[k]:null;
+ctx.localStorage.setItem=(k,v)=>storage[k]=v;
+ctx.statsMemoryOnly=false;ctx.readStudyStats();
+nodes.activity.value='learn';nodes.book.value='1';nodes.unit.value='1';nodes.count.value='10';nodes['auto-next'].value='5';
+ctx.updateActivitySetup();assert.equal(nodes['quiz-settings'].hidden,true);
+ctx.begin();assert.equal(ctx.activity,'learn');assert.equal(ctx.queue.length,20,'learn all selected lesson words');
+assert.equal(nodes['learn-meaning'].textContent,ctx.queue[0].meaning);assert.equal(nodes.options.hidden,true);assert.equal(nodes['previous-word'].disabled,true);
+key('0');assert.equal(ctx.answers.length,0);assert.equal(intervals.size,0,'learning has no quiz auto timer');
+key('ArrowLeft');assert.equal(ctx.index,0);key('ArrowRight');assert.equal(ctx.index,1);key('ArrowLeft');assert.equal(ctx.index,0);
+const previousReading=ctx.studyStats.readingSessions||0,previousQuiz=ctx.studyStats.completedSessions;
+for(let i=0;i<20;i++)key('ArrowRight');
+assert.equal(nodes.result.hidden,false);assert.equal(ctx.studyStats.readingSessions,previousReading+1);
+assert.equal(ctx.studyStats.completedSessions,previousQuiz,'reading is not quiz score');
+ctx.finishLearning();assert.equal(ctx.studyStats.readingSessions,previousReading+1,'no duplicate completion');
+ctx.readStudyStats();assert.equal(ctx.studyStats.readingSessions,previousReading+1,'reading persisted');
+ctx.begin();key('ArrowRight');ctx.begin();assert.equal(ctx.studyStats.readingSessions,previousReading+1,'unfinished reading is not counted');
+nodes.activity.value='quiz';ctx.updateActivitySetup();ctx.begin();assert.equal(ctx.activity,'quiz');assert.equal(nodes.options.hidden,false);assert.equal(nodes['learn-content'].hidden,true);key('0');assert.equal(ctx.answers.length,1);
+console.log('PASS: learning meanings, full lesson order, arrow navigation/bounds, no quiz answers/timer, completed reading statistics, quiz switching.');
