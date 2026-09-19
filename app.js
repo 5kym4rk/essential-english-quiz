@@ -6,6 +6,7 @@ function text(id,value){$(id).textContent=value;}
 function add(parent){for(var i=1;i<arguments.length;i++)parent.appendChild(arguments[i]);}
 function pad(n){return n<10?'0'+n:String(n);}
 var config=window.wordcraftConfig||{},showDiagram=false;
+if(config.kind)document.body.classList.add('collection-'+config.kind);
 function bookName(n){return config.bookNames?config.bookNames[n]:'Bộ '+n;}
 function unitName(b,u){return config.unitNames&&config.unitNames[b+'-'+u]?'NP '+u+' · '+config.unitNames[b+'-'+u]:'Bài '+pad(u);}
 function wordMeta(w){return bookName(w.book)+' · '+unitName(w.book,w.unit);}
@@ -15,13 +16,15 @@ function readImagePreference(){try{return localStorage.getItem('wordcraft-show-i
 var showImages=readImagePreference();
 function renderQuestionImage(){
  var host=$('question-image'),w=queue[index];
- empty(host);host.hidden=!showImages;
+ empty(host);host.hidden=!showImages||config.kind==='grammar';
+ $('toggle-images').hidden=config.kind==='grammar';
  text('toggle-images',showImages?'\u1ea2nh: B\u1eadt':'\u1ea2nh: T\u1eaft');
  $('toggle-images').setAttribute('aria-pressed',showImages?'true':'false');
- if(!showImages||!w||!(w.image||w.diagram))return;
+ if(config.kind==='grammar'||!showImages||!w||!(w.image||w.diagram))return;
  var figure=document.createElement('figure');figure.className='illustration';
  var image=document.createElement('img');image.alt='\u1ea2nh minh h\u1ecda t\u1eeb v\u1ef1ng';
  image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
+ image.onload=schedulePictureFit;
  image.src=showDiagram&&w.diagram?w.diagram:(w.image||w.diagram);add(figure,image);add(host,figure);
 }
 $('toggle-images').onclick=function(){
@@ -62,6 +65,15 @@ function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
  if(quiz.hidden||!image)return;
+ if(config.kind==='radicals'){
+  var panelReserve=mobile()&&(activity==='learn'||locked)?$('study-panel').getBoundingClientRect().height+12:0;
+  var imageOffset=image.getBoundingClientRect().top-quiz.getBoundingClientRect().top;
+  image.style.height=Math.max(80,Math.floor(viewportHeight()-imageOffset-panelReserve-15))+'px';
+  return;
+ }
+ if(activity==='learn'&&config.kind==='vocabulary'&&mobile()){
+  image.style.height=Math.max(200,Math.min(360,Math.round(viewportHeight()*0.34)))+'px';return;
+ }
  if(activity==='learn'){
   var learningHeight=mobile()?(window.matchMedia('(min-width:390px)').matches?Math.min(260,Math.round(document.documentElement.clientWidth*0.56)):120):Math.max(320,Math.min(520,Math.round(viewportHeight()*0.5)));
   image.style.height=learningHeight+'px';return;
@@ -114,6 +126,7 @@ function choose(i){
  $('audio').hidden=!w.audio;$('next').disabled=false;
  text('score',score()+' câu đúng');text('next',index===queue.length-1?'Xem kết quả →':'Câu tiếp theo →');
  recordCompletedQuiz();
+ if(config.kind==='radicals')schedulePictureFit();
  startTimer();
 }
 function advance(){if(activity==='learn'){if(index<queue.length-1){index++;render();}else finishLearning();return;}if(!locked)return;stopTimer();index++;if(index<queue.length)render();else finish();}
@@ -291,7 +304,7 @@ function renderLearning(){
  text('session-label','TỪ '+(index+1)+' / '+queue.length);text('score','HỌC TỪ');
  $('bar').style.width=((index+1)/queue.length*100)+'%';
  text('meta',wordMeta(w));text('prompt','Đọc từ, nghĩa và ví dụ');
- if($('toggle-diagram')){$('toggle-diagram').hidden=!w.diagram; text('toggle-diagram','Xem sơ đồ / cách viết');}
+ if($('toggle-diagram')){$('toggle-diagram').hidden=config.kind==='grammar'||!w.diagram; text('toggle-diagram','Xem sơ đồ / cách viết');}
  text('question',w.word);text('ipa',w.ipa);text('learn-meaning',w.meaning);text('learn-example',w.explanation);
  $('audio').hidden=!w.audio;text('audio-status','');$('next').disabled=false;
  text('next',index===queue.length-1?'Hoàn tất lượt học ✓':'Từ tiếp theo →');
