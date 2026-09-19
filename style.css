@@ -88,7 +88,7 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 #learn-meaning{font-size:23px;font-weight:600;line-height:1.5;margin:12px 0}
 #learn-example{font-size:16px;line-height:1.7;color:#607467;margin:12px 0}
 #previous-word{min-height:44px;margin:8px 0}
-.learning-words .illustration img{max-height:220px}
+.learning-words .illustration img{max-height:520px}
 @media(max-width:680px){
  .studying.learning-words:not(.answered) #study-panel{display:block}
  .learning-words #study-panel #feedback,.learning-words #answer-hint{display:none}
