@@ -137,22 +137,22 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 @media(max-width:680px){.stats-tile{width:20%;padding:3px}.stats-cell{min-height:61px;border-radius:8px}.stats-cell span{font-size:11px}.stats-cell strong{font-size:12px}.stats-overview{margin-bottom:12px}}
 
 header .theme-toggle{padding:7px 10px;font-size:13px;min-height:36px;margin-left:12px;white-space:nowrap}header>span{margin-left:auto}
-html.dark{color-scheme:dark;background:#121a17;color:#e1e9e2}
-.dark body{background:#121a17;color:#e1e9e2}
-.dark .workspace,.dark #study-panel,.dark #stats-panel{background:#1b2621;border-color:#35463b;box-shadow:none}
-.dark .secondary,.dark select,.dark .option,.dark .subjects a{background:#24332a;color:#e1e9e2;border-color:#485e4e}
-.dark .option:not(:disabled):hover,.dark .subjects a:hover{background:#324835;border-color:#92b67b}
+html.dark{color-scheme:dark;background:#080808;color:#e8e8e8}
+.dark body{background:#080808;color:#e8e8e8}
+.dark .workspace,.dark #study-panel,.dark #stats-panel{background:#141414;border-color:#303030;box-shadow:none}
+.dark .secondary,.dark select,.dark .option,.dark .subjects a{background:#202020;color:#e8e8e8;border-color:#424242}
+.dark .option:not(:disabled):hover,.dark .subjects a:hover{background:#2b2b2b;border-color:#92b67b}
 .dark .primary{background:#a7c88c;color:#172617}.dark .primary:hover{background:#bbdaa3}
-.dark .intro,.dark #total,.dark #meta,.dark #prompt,.dark #ipa,.dark #learn-example,.dark #feedback p,.dark #answer-hint,.dark #countdown,.dark #audio-status,.dark .keyboard,.dark .eyebrow,.dark .tip,.dark .tip p,.dark .tip small,.dark #history,.dark footer,.dark header>span,.dark #welcome p,.dark #result-message,.dark .review-item span,.dark .stats-rule,.dark .stats-note,.dark #stats-empty,.dark .stats-overview span{color:#b8c8bc}
-.dark #study-panel .answer-meaning{color:#e1e9e2}
-.dark .illustration,.dark .stats-overview>div,.dark .pill,.dark #stats-detail{background:#24332a;color:#dce8d9;border-color:#3d5142}
+.dark .intro,.dark #total,.dark #meta,.dark #prompt,.dark #ipa,.dark #learn-example,.dark #feedback p,.dark #answer-hint,.dark #countdown,.dark #audio-status,.dark .keyboard,.dark .eyebrow,.dark .tip,.dark .tip p,.dark .tip small,.dark #history,.dark footer,.dark header>span,.dark #welcome p,.dark #result-message,.dark .review-item span,.dark .stats-rule,.dark .stats-note,.dark #stats-empty,.dark .stats-overview span{color:#bdbdbd}
+.dark #study-panel .answer-meaning{color:#e8e8e8}
+.dark .illustration,.dark .stats-overview>div,.dark .pill,.dark #stats-detail{background:#202020;color:#e0e0e0;border-color:#383838}
 .dark #audio,.dark .image-toggle[aria-pressed="true"],.dark .auto-read-toggle[aria-pressed="true"]{background:#344c2f;color:#e2f1d7;border-color:#86a771}
-.dark .key,.dark .tip,.dark .review-item,.dark .sample,.dark .stats-note{border-color:#455847}
+.dark .key,.dark .tip,.dark .review-item,.dark .sample,.dark .stats-note{border-color:#3b3b3b}
 .dark .correct{background:#304e2d!important;border-color:#9bc77d!important;color:#ecf7e5!important}
 .dark .wrong{background:#59332f!important;border-color:#de9488!important;color:#ffe5df!important}
-.dark .progress,.dark .stats-track{background:#324339}.dark #bar,.dark .stats-bar{background:#a7c88c}
+.dark .progress,.dark .stats-track{background:#303030}.dark #bar,.dark .stats-bar{background:#a7c88c}
 .dark #result-score,.dark .stats-help-toggle{color:#b9d99c}
-.dark .stats-cell{border-color:#597052;color:#e1e9e2}
-.dark .level-0{background:#26332c;color:#bdc9bf}.dark .level-1{background:#3b4e32;color:#e0eccc}.dark .level-2{background:#627e48;color:#f5ffe6}.dark .level-3{background:#a7c88c;color:#172617}
+.dark .stats-cell{border-color:#424242;color:#e8e8e8}
+.dark .level-0{background:#242424;color:#c4c4c4}.dark .level-1{background:#3b4e32;color:#e0eccc}.dark .level-2{background:#627e48;color:#f5ffe6}.dark .level-3{background:#a7c88c;color:#172617}
 .dark .stats-cell[aria-pressed="true"]{outline-color:#c8e6ac}
 .dark button:focus-visible,.dark a:focus-visible,.dark select:focus-visible{outline-color:#c8e6ac}
