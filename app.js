@@ -254,6 +254,7 @@ function lessonCatalog(){
  });
  return list.sort(function(a,b){return a.book-b.book||a.unit-b.unit;});
 }
+var statsPage=0,statsPageSize=30;
 function renderStudyStats(){
  var catalog=lessonCatalog(),selected=Number($('stats-book').value)||1;
  var allLearned=0,bookLearned=0,rows=[],maximum=1;
@@ -268,20 +269,33 @@ function renderStudyStats(){
  text('stats-storage-note',statsStorageWarning||'Lịch sử lưu trong trình duyệt trên thiết bị này, không đồng bộ giữa các máy. Xóa dữ liệu trình duyệt sẽ xóa thống kê.');
  $('stats-empty').hidden=studyStats.completedSessions+safeCount(studyStats.readingSessions)>0;
  empty($('stats-chart'));
- rows.forEach(function(row){
-  var item=document.createElement('li');item.className='stats-row'+(row.count?'':' stats-unseen');
-  var label=document.createElement('div');label.className='stats-row-label';
-  var name=document.createElement('span');name.textContent=unitName(selected,row.unit);
-  var value=document.createElement('strong');value.textContent=row.count?row.count+' lượt':'Chưa học · 0 lượt';
-  add(label,name,value);
-  var track=document.createElement('div');track.className='stats-track';track.setAttribute('aria-hidden','true');
-  var bar=document.createElement('span');bar.className='stats-bar';bar.style.width=(row.count/maximum*100)+'%';
-  add(track,bar);add(item,label,track);add($('stats-chart'),item);
+ statsPage=Math.max(0,Math.min(statsPage,Math.ceil(rows.length/statsPageSize)-1));
+ var start=statsPage*statsPageSize;
+ $('stats-pager').hidden=rows.length<=statsPageSize;
+ $('stats-prev').disabled=statsPage===0;$('stats-next').disabled=start+statsPageSize>=rows.length;
+ text('stats-page-label',(start+1)+'–'+Math.min(start+statsPageSize,rows.length)+' / '+rows.length+' bài');
+ text('stats-detail','Chạm một ô để xem tên bài và số lượt học.');
+ rows.slice(start,start+statsPageSize).forEach(function(row){
+  var item=document.createElement('li');item.className='stats-tile';
+  var button=document.createElement('button');button.type='button';
+  var level=row.count===0?0:row.count===1?1:row.count<5?2:3;
+  button.className='stats-cell level-'+level;
+  var fullName=bookName(selected)+' · '+unitName(selected,row.unit);
+  button.setAttribute('aria-label',fullName+': '+row.count+' lượt');
+  button.setAttribute('aria-pressed','false');
+  var name=document.createElement('span');name.textContent=(config.kind==='grammar'?'NP ':'Bài ')+pad(row.unit);
+  var value=document.createElement('strong');value.textContent=row.count+' lượt';
+  add(button,name,value);
+  button.onclick=function(){
+   for(var i=0;i<$('stats-chart').children.length;i++)$('stats-chart').children[i].firstChild.setAttribute('aria-pressed','false');
+   button.setAttribute('aria-pressed','true');text('stats-detail',fullName+' — '+row.count+' lượt học hoàn tất');
+  };
+  add(item,button);add($('stats-chart'),item);
  });
 }
 function openStudyStats(){
  stopTimer();stopAudio();statsScrollTop=window.pageYOffset||0;statsWasStudying=!$('quiz').hidden;
- readStudyStats();
+ readStudyStats();statsPage=0;
  $('stats-book').value=Number($('book').value)?$('book').value:'1';
  document.body.classList.remove('studying');document.body.classList.remove('answered');
  $('learning-layout').hidden=true;$('stats-panel').hidden=false;
@@ -296,7 +310,10 @@ $('open-stats').onclick=openStudyStats;
 $('study-stats').onclick=openStudyStats;
 $('result-stats').onclick=openStudyStats;
 $('close-stats').onclick=closeStudyStats;
-$('stats-book').onchange=renderStudyStats;
+$('stats-book').onchange=function(){statsPage=0;renderStudyStats();};
+$('stats-prev').onclick=function(){statsPage--;renderStudyStats();};
+$('stats-next').onclick=function(){statsPage++;renderStudyStats();};
+$('stats-help-toggle').onclick=function(){var show=$('stats-help').hidden;$('stats-help').hidden=!show;$('stats-help-toggle').setAttribute('aria-expanded',show?'true':'false');};
 
 
 var activity='quiz',learnSeen={};

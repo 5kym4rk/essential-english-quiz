@@ -122,3 +122,16 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 .learning-words #answer-hint{font-size:13px;margin-bottom:8px}
 .learning-words #previous-word,.learning-words #study-panel #next{min-height:36px;padding:8px 12px;font-size:14px;margin-top:4px}
 @media(max-width:680px){.image-controls .secondary,.chinese .image-controls #toggle-diagram{min-height:36px}.learning-words #study-panel{padding:6px 12px 10px}.learning-words #previous-word,.learning-words #study-panel #next{min-height:40px}}
+
+#stats-chart{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -4px}
+.stats-tile{width:10%;padding:4px;min-width:0}
+.stats-cell{display:block;width:100%;min-height:68px;border:1px solid #d9e3d9;border-radius:10px;padding:9px 3px;color:#294b40;text-align:center}
+.stats-cell span{display:block;font-size:12px}.stats-cell strong{display:block;font-size:14px;margin-top:6px}
+.level-0{background:#f1f4f1;color:#697c71}.level-1{background:#e8f2d8;color:#35572e}.level-2{background:#b9d78c;color:#274923}.level-3{background:#356344;color:white}
+.stats-cell[aria-pressed="true"]{outline:2px solid #163f36;outline-offset:1px}
+.stats-legend{display:flex;flex-wrap:wrap;margin:0 0 10px}.stats-legend span{font-size:12px;border-radius:5px;padding:5px 9px;margin:0 6px 4px 0}
+#stats-pager{display:flex;align-items:center;justify-content:space-between;margin:12px 0;font-size:13px}#stats-pager button{padding:7px 12px;min-height:36px}
+#stats-detail{min-height:44px;background:#f4f7f2;border-radius:9px;padding:12px;font-size:14px;line-height:1.5;color:#385c47}
+.stats-help-toggle{background:none;border:0;padding:0;color:#476749;text-decoration:underline;font-size:13px}
+.stats-legacy-note{display:none}.stats-filter{margin:14px 0}#stats-book-summary{margin:16px 0 12px;font-size:18px}
+@media(max-width:680px){.stats-tile{width:20%;padding:3px}.stats-cell{min-height:61px;border-radius:8px}.stats-cell span{font-size:11px}.stats-cell strong{font-size:12px}.stats-overview{margin-bottom:12px}}
