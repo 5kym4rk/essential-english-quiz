@@ -102,7 +102,7 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 
 .subjects{max-width:1250px;margin:0 auto;padding:0 40px 14px;display:flex;flex-wrap:wrap}.subjects a{display:block;color:#214632;background:#fff;border:1px solid #c9d6ca;border-radius:9px;padding:10px 14px;margin:0 8px 8px 0;text-decoration:none;font-size:14px}.subjects a:hover{background:#edf5e5}#learn-example{white-space:pre-line}.chinese .heading h2{line-height:1.5;letter-spacing:0;word-break:break-word}.chinese #meta{line-height:1.6}.chinese .stats-row-label>span{line-height:1.5}.chinese #toggle-diagram{margin:8px 0}@media(max-width:680px){.subjects{padding:0 20px 6px}.subjects a{padding:9px 10px}.studying .subjects{display:none}}
 
-.collection-grammar .image-controls,.collection-grammar #question-image,.collection-grammar #toggle-diagram{display:none!important}
+.collection-grammar #toggle-images,.collection-grammar #question-image,.collection-grammar #toggle-diagram{display:none!important}
 @media(max-width:680px){.collection-vocabulary.learning-words .illustration img{max-height:360px}}
 .collection-radicals #quiz{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column}
 .collection-radicals.learning-words #question-image{-webkit-order:2;order:2}
@@ -110,3 +110,15 @@ main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-item
 .collection-radicals .illustration img{max-height:none;object-position:center bottom}
 
 .auto-read-toggle{font-size:14px;padding:8px 12px;min-height:40px;margin:6px 0}.auto-read-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}
+
+.learning-words #prompt{display:none}
+.image-controls{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-items:center;align-items:center;text-align:left;margin:4px 0}
+.image-controls .secondary,.chinese .image-controls #toggle-diagram{width:auto;min-height:32px;padding:5px 9px;font-size:13px;margin:0 6px 4px 0;border-radius:7px}
+.learning-words #learn-meaning{margin:6px 0;font-size:21px}
+.learning-words #learn-example{margin:6px 0;line-height:1.5}
+.learning-words #quiz .illustration img{max-height:none;object-position:center bottom}
+.studying #change-settings,.studying #study-stats{padding:8px 12px;min-height:36px;font-size:14px;margin-bottom:8px}
+.learning-words #study-panel{padding:12px}
+.learning-words #answer-hint{font-size:13px;margin-bottom:8px}
+.learning-words #previous-word,.learning-words #study-panel #next{min-height:36px;padding:8px 12px;font-size:14px;margin-top:4px}
+@media(max-width:680px){.image-controls .secondary,.chinese .image-controls #toggle-diagram{min-height:36px}.learning-words #study-panel{padding:6px 12px 10px}.learning-words #previous-word,.learning-words #study-panel #next{min-height:40px}}

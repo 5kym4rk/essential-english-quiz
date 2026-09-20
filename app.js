@@ -79,18 +79,11 @@ function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
  if(quiz.hidden||!image)return;
- if(config.kind==='radicals'&&activity==='learn'){
-  var panelReserve=mobile()&&(activity==='learn'||locked)?$('study-panel').getBoundingClientRect().height+12:0;
+ if(activity==='learn'){
+  var panelReserve=mobile()?$('study-panel').getBoundingClientRect().height+12:0;
   var imageOffset=image.getBoundingClientRect().top-quiz.getBoundingClientRect().top;
   image.style.height=Math.max(80,Math.floor(viewportHeight()-imageOffset-panelReserve-15))+'px';
   return;
- }
- if(activity==='learn'&&config.kind==='vocabulary'&&mobile()){
-  image.style.height=Math.max(200,Math.min(360,Math.round(viewportHeight()*0.34)))+'px';return;
- }
- if(activity==='learn'){
-  var learningHeight=mobile()?(window.matchMedia('(min-width:390px)').matches?Math.min(260,Math.round(document.documentElement.clientWidth*0.56)):120):Math.max(320,Math.min(520,Math.round(viewportHeight()*0.5)));
-  image.style.height=learningHeight+'px';return;
  }
  if(!last)return;
  var reserve=mobile()?$('study-panel').getBoundingClientRect().height+16:16;
@@ -107,7 +100,7 @@ function render(){
  showDiagram=false;
  if(activity==='learn'){renderLearning();return;}
  document.body.classList.remove('learning-words');
- $('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
+ $('toggle-diagram').hidden=true;$('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
  text('keyboard-help','Ph\u00edm 0\u20133 \u0111\u1ec3 ch\u1ecdn \u00b7 Enter \u0111\u1ec3 ti\u1ebfp t\u1ee5c');
  stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,config.language?words.filter(function(x){return x.book===w.book;}):words,mode);
  text('session-label','CÂU '+(index+1)+' / '+queue.length);text('score',score()+' câu đúng');
