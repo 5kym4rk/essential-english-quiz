@@ -5,6 +5,7 @@ function empty(node){while(node.firstChild)node.removeChild(node.firstChild);}
 function text(id,value){$(id).textContent=value;}
 function add(parent){for(var i=1;i<arguments.length;i++)parent.appendChild(arguments[i]);}
 function pad(n){return n<10?'0'+n:String(n);}
+if(window.wordcraftTheme)window.wordcraftTheme.init();
 var config=window.wordcraftConfig||{},showDiagram=false;
 if(config.kind)document.body.classList.add('collection-'+config.kind);
 function bookName(n){return config.bookNames?config.bookNames[n]:'Bộ '+n;}
