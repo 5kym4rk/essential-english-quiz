@@ -11,7 +11,7 @@ class El{
 }
 const nodes={};ids.forEach(id=>nodes[id]=new El('div'));
 nodes['stats-panel'].hidden=true;nodes['quiz'].hidden=true;
-nodes.activity.value='quiz';nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes.count.value='10';nodes['auto-next'].value='0';
+nodes.activity.value='quiz';nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes['auto-next'].value='0';
 const events={},intervals=new Map();let timerid=0;
 const ctx={console,JSON,Math,Date,document:{hidden:false,body:new El('body'),getElementById:id=>{assert(nodes[id],id);return nodes[id];},createElement:tag=>new El(tag),addEventListener:(k,f)=>events[k]=f},window:{innerHeight:720,matchMedia:()=>({matches:false}),addEventListener(){},scrollTo(){}},localStorage:{getItem(){return null;},setItem(){}},Option:function(t,v){this.textContent=t;this.value=v;},XMLHttpRequest:function(){this.open=()=>{};this.send=()=>{this.status=200;this.responseText=JSON.stringify(data);this.onload();};},Audio:function(){this.play=()=>undefined;this.pause=()=>{};},requestAnimationFrame:f=>{f();return 1;},cancelAnimationFrame(){},setInterval:f=>{intervals.set(++timerid,f);return timerid;},clearInterval:id=>intervals.delete(id)};
 vm.createContext(ctx);vm.runInContext(source,ctx);
@@ -68,7 +68,7 @@ console.log('PASS: image toggle, persistence, next-question preference, preserve
 ctx.localStorage.getItem=k=>Object.prototype.hasOwnProperty.call(storage,k)?storage[k]:null;
 ctx.localStorage.setItem=(k,v)=>storage[k]=v;
 ctx.statsMemoryOnly=false;ctx.readStudyStats();
-nodes.activity.value='learn';nodes.book.value='1';nodes.unit.value='1';nodes.count.value='10';nodes['auto-next'].value='5';
+nodes.activity.value='learn';nodes.book.value='1';nodes.unit.value='1';nodes['auto-next'].value='5';
 ctx.updateActivitySetup();assert.equal(nodes['quiz-settings'].hidden,true);
 ctx.begin();assert.equal(ctx.activity,'learn');assert.equal(ctx.queue.length,20,'learn all selected lesson words');
 assert.equal(nodes['learn-meaning'].textContent,ctx.queue[0].meaning);assert.equal(nodes.options.hidden,true);assert.equal(nodes['previous-word'].disabled,true);
@@ -106,3 +106,5 @@ const firstLessonCount=ctx.queue.length;for(let i=0;i<firstLessonCount;i++)ctx.a
 nodes['next-lesson'].onclick();assert.equal(ctx.learningLessonIndex,1);assert(ctx.queue.every(w=>w.book===1&&w.unit===2));assert.equal(nodes.book.value,'1');assert.equal(nodes.unit.value,'2');
 const learnedIds=ctx.queue.map(w=>w.id).sort();const secondLessonCount=ctx.queue.length;for(let i=0;i<secondLessonCount;i++)ctx.advance();nodes['review-lesson'].onclick();assert.equal(ctx.activity,'quiz');assert.deepEqual(ctx.queue.map(w=>w.id).sort(),learnedIds);
 console.log('PASS: all-lessons learning is split by original quiz lessons, next lesson, and exact same-card review.');
+
+nodes.activity.value='quiz';nodes.book.value='6';nodes.unit.value='14';ctx.begin();assert.equal(ctx.queue.length,40,'quiz includes all cards in the original 40-card lesson');nodes.unit.value='0';ctx.begin();assert.equal(ctx.queue.length,600,'all lessons include the entire selected book');assert(!html.includes('id="count"'));console.log('PASS: full lesson and full book quizzes, no question-count control.');

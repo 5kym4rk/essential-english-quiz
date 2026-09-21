@@ -87,7 +87,7 @@ function begin(retry,continueLesson){
   }
  }
  $('next-lesson').hidden=true;$('review-lesson').hidden=true;
- queue=activity==='learn'?pool.slice():shuffle(retry||pool).slice(0,retry?retry.length:Number($('count').value));
+ queue=activity==='learn'?pool.slice():shuffle(retry||pool);
  if(!queue.length){text('total','Nhóm này chỉ hỗ trợ Học từ. Hãy chọn chế độ Học từ để xem câu hỏi và câu trả lời.');return;}
  index=0;answers=[];sessionRecorded=false;$('study-stats').hidden=false;document.body.classList.add('studying');$('setup').hidden=true;$('change-settings').hidden=false;
  $('welcome').hidden=true;$('result').hidden=true;$('quiz').hidden=false;$('study-panel').hidden=false;render();
@@ -346,7 +346,7 @@ var activity='quiz',learnSeen={};
 function updateActivitySetup(){
  if(learnOnlyBook())$('activity').value='learn';
  var learning=$('activity').value==='learn';
- $('quiz-settings').hidden=learning;$('count-settings').hidden=learning;
+ $('quiz-settings').hidden=learning;
  text('start',learning?'Bắt đầu học từ →':'Bắt đầu trắc nghiệm →');
 }
 $('activity').onchange=updateActivitySetup;
@@ -392,6 +392,6 @@ function recordCompletedReading(){
 
 if($('toggle-diagram'))$('toggle-diagram').onclick=function(){showDiagram=!showDiagram;showImages=true;renderQuestionImage();schedulePictureFit();text('toggle-diagram',showDiagram?'Xem ảnh minh họa':'Xem sơ đồ / cách viết');};
 $('next-lesson').onclick=function(){if(learningLessonIndex+1<learningPlan.length){learningLessonIndex++;begin(null,true);}};
-$('review-lesson').onclick=function(){$('activity').value='quiz';$('count').value='9999';updateActivitySetup();begin();};
+$('review-lesson').onclick=function(){$('activity').value='quiz';updateActivitySetup();begin();};
 updateActivitySetup();
 loadData();
