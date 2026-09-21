@@ -1,0 +1,167 @@
+{
+  "source": "https://learnlanglab.github.io/learn/",
+  "importedAt": "2026-09-21T11:54:21.310Z",
+  "cards": 11909,
+  "groups": [
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk1_vocab.js",
+      "label": "HSK1-từ",
+      "cards": 146,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "894ede811690edf4a515a56b03cc9da505cd15ab46a6858f5e5529e7cf82473b"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk11_vocab.js",
+      "label": "HSK1-câu",
+      "cards": 146,
+      "duplicatesRemoved": 3,
+      "incompleteSkipped": 0,
+      "sha256": "aafcb7da66ac8268b04ded1bd67229326a81c6448ec7f50841e434313b8bff65"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk2_vocab.js",
+      "label": "HSK2-từ",
+      "cards": 150,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "c3e4f8aaf786e96543417025989ade9b8daace930884c17cdc95347e76124688"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk12_vocab.js",
+      "label": "HSK2-câu",
+      "cards": 150,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "d0df5954359a01923807c1f9c597b3b09e195c374d78cc1d2683971ccddecb02"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk3_vocab.js",
+      "label": "HSK3-từ",
+      "cards": 295,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "4e714f67a87a8ca25f4037bd5fea7dbe6b5658a08e3ebf736d128db290982ffa"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk13_vocab.js",
+      "label": "HSK3-câu",
+      "cards": 295,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "b7cf922405fd823196075114dc9b20a78d0aae9817834b954b0cff79ee243c9b"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk4_vocab.js",
+      "label": "HSK4-từ",
+      "cards": 600,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "fa55cce5cfbd3647a3ee2740dec163634385878d7e104c668b9df66410dbd31a"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk14_vocab.js",
+      "label": "HSK4-câu FULL",
+      "cards": 599,
+      "duplicatesRemoved": 1,
+      "incompleteSkipped": 0,
+      "sha256": "db68bf031da3dd561cb4c380a5d6796bacd464c98d1fec68599efc577c7ea0ed"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk41_vocab.js",
+      "label": "HSK4-câu 1",
+      "cards": 199,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "28ff1a3838d7a82a2b15aad140cf5063045cf95a5ca4d983728cd87a7cce3482"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk42_vocab.js",
+      "label": "HSK4-câu 2",
+      "cards": 200,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "e92e6683a1c81d52a97d5f1863480d042f39b8ca79cfe8dcf858395b3b44e83f"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk43_vocab.js",
+      "label": "HSK4-câu 3",
+      "cards": 200,
+      "duplicatesRemoved": 1,
+      "incompleteSkipped": 0,
+      "sha256": "36ca981f49b44ca3f405cdb50f4a7a2da7b3ab548960acb28ab234990da21747"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk5_vocab.js",
+      "label": "HSK5-từ",
+      "cards": 1295,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "815ffb5247faf6b770ba943de81d5780deb93992e1fb9ecfdd0a0dd5308c5883"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk15_vocab.js",
+      "label": "HSK5-câu FULL",
+      "cards": 1294,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 1,
+      "sha256": "39f0d65f3e3220a06849de995a00506b4aec6f8dffcad969c7622dc20cfdc4f7"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk51_vocab.js",
+      "label": "HSK5-câu 1",
+      "cards": 299,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "1255ed9f430ff599d4f24a3048f2b69599487ea3e23e778aa8c7532046c493e6"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk52_vocab.js",
+      "label": "HSK5-câu 2",
+      "cards": 300,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "7859bfb80b383a82999e50965beab0e47badb6cb435d08767a57909e10b27925"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk53_vocab.js",
+      "label": "HSK5-câu 3",
+      "cards": 300,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "b6ada965c37451ebae4ada1649bfc7204dfdece81708dee330fb82f79e8b88d6"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk54_vocab.js",
+      "label": "HSK5-câu 4",
+      "cards": 395,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 1,
+      "sha256": "6cd7c4c6c057d1e3f0c90fd8e97a0e53da73c030b269d137d9d3a88233cb8144"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk6_vocab.js",
+      "label": "HSK6-từ",
+      "cards": 2513,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "3eb9c67be185aba20a7a3d7c2749ca0e8435dfe9ec5ffea471803d9dab490a55"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk16_vocab.js",
+      "label": "HSK6-câu FULL",
+      "cards": 2513,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "6bc2d993455980f9463c38861c41ef4cfa601354a280df438b2dd36354a082db"
+    },
+    {
+      "source": "https://learnlanglab.github.io/learn/hsk21_vocab.js",
+      "label": "Hỏi đáp (học câu)",
+      "cards": 20,
+      "duplicatesRemoved": 0,
+      "incompleteSkipped": 0,
+      "sha256": "d7d7e437c900381e452e88208313585fd3ead404b2317d996e62d88ddbccb4e3"
+    }
+  ]
+}

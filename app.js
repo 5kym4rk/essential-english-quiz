@@ -12,7 +12,10 @@ function bookName(n){return config.bookNames?config.bookNames[n]:'Bộ '+n;}
 function unitName(b,u){return config.unitNames&&config.unitNames[b+'-'+u]?'NP '+u+' · '+config.unitNames[b+'-'+u]:'Bài '+pad(u);}
 function wordMeta(w){return bookName(w.book)+' · '+unitName(w.book,w.unit);}
 var words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playing=null;
-var timer=null,remaining=0,pictureFrame=null;
+var timer=null,remaining=0,pictureFrame=null,spoken=null;
+function hasCardAudio(w){return !!(w&&(w.audio||(config.speechLang&&window.speechSynthesis&&window.SpeechSynthesisUtterance)));}
+function learnOnlyBook(){return config.learnOnlyBooks&&config.learnOnlyBooks.indexOf(Number($('book').value))!==-1;}
+
 function readImagePreference(){try{return localStorage.getItem('wordcraft-show-images')!=='off';}catch(e){return true;}}
 var showImages=readImagePreference();
 function readAutoReadPreference(){try{return localStorage.getItem('wordcraft-auto-read')==='on';}catch(e){return false;}}
@@ -31,11 +34,11 @@ $('toggle-auto-read').onclick=function(){
 updateAutoReadButton();
 function renderQuestionImage(){
  var host=$('question-image'),w=queue[index];
- empty(host);host.hidden=!showImages||config.kind==='grammar';
- $('toggle-images').hidden=config.kind==='grammar';
+ empty(host);host.hidden=!showImages||config.kind==='grammar'||!!config.noImages;
+ $('toggle-images').hidden=config.kind==='grammar'||!!config.noImages;
  text('toggle-images',showImages?'\u1ea2nh: B\u1eadt':'\u1ea2nh: T\u1eaft');
  $('toggle-images').setAttribute('aria-pressed',showImages?'true':'false');
- if(config.kind==='grammar'||!showImages||!w||!(w.image||w.diagram))return;
+ if(config.kind==='grammar'||config.noImages||!showImages||!w||!(w.image||w.diagram))return;
  var figure=document.createElement('figure');figure.className='illustration';
  var image=document.createElement('img');image.alt='\u1ea2nh minh h\u1ecda t\u1eeb v\u1ef1ng';
  image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
@@ -56,7 +59,7 @@ function makeChoices(w,all,direction){
  for(i=0;i<pool.length;i++){x=pool[i];key='$'+norm(x[field]);if(norm(x[other])===norm(w[other])||seen[key])continue;seen[key]=true;candidates.push(x);if(candidates.length===3)break;}
  return shuffle([w].concat(candidates));
 }
-function stopAudio(){if(playing){playing.pause();playing=null;}}
+function stopAudio(){if(spoken&&window.speechSynthesis){spoken=null;window.speechSynthesis.cancel();}if(playing){playing.pause();playing=null;}}
 function stopTimer(){if(timer!==null)clearInterval(timer);timer=null;remaining=0;text('countdown','');$('pause-auto').hidden=true;}
 function startTimer(){
  stopTimer();var delay=Number($('auto-next').value);
@@ -69,9 +72,9 @@ function history(){try{var s=JSON.parse(localStorage.getItem(config.historyKey||
 function score(){return answers.filter(function(a){return a.correct;}).length;}
 function begin(retry){
  stopTimer();stopAudio();mode=$('mode').value;activity=retry?'quiz':$('activity').value;learnSeen={};
- var pool=words.filter(function(w){return (!Number($('book').value)||w.book===Number($('book').value))&&(!Number($('unit').value)||w.unit===Number($('unit').value));});
+ var pool=words.filter(function(w){return (activity==='learn'||!w.learnOnly)&&(!Number($('book').value)||w.book===Number($('book').value))&&(!Number($('unit').value)||w.unit===Number($('unit').value));});
  queue=activity==='learn'?pool.slice():shuffle(retry||pool).slice(0,retry?retry.length:Number($('count').value));
- if(!queue.length)return;
+ if(!queue.length){text('total','Nhóm này chỉ hỗ trợ Học từ. Hãy chọn chế độ Học từ để xem câu hỏi và câu trả lời.');return;}
  index=0;answers=[];sessionRecorded=false;$('study-stats').hidden=false;document.body.classList.add('studying');$('setup').hidden=true;$('change-settings').hidden=false;
  $('welcome').hidden=true;$('result').hidden=true;$('quiz').hidden=false;$('study-panel').hidden=false;render();
 }
@@ -103,13 +106,13 @@ function render(){
  document.body.classList.remove('learning-words');
  $('toggle-diagram').hidden=true;$('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
  text('keyboard-help','Ph\u00edm 0\u20133 \u0111\u1ec3 ch\u1ecdn \u00b7 Enter \u0111\u1ec3 ti\u1ebfp t\u1ee5c');
- stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,config.language?words.filter(function(x){return x.book===w.book;}):words,mode);
+ stopTimer();stopAudio();locked=false;document.body.classList.remove('answered');var w=queue[index];choices=makeChoices(w,config.language?words.filter(function(x){return x.book===w.book&&!x.learnOnly;}):words,mode);
  text('session-label','CÂU '+(index+1)+' / '+queue.length);text('score',score()+' câu đúng');
  $('bar').style.width=(index/queue.length*100)+'%';
  text('meta',wordMeta(w));
  text('prompt',mode==='en'?'Chọn nghĩa tiếng Việt phù hợp':'Chọn '+(config.language||'tiếng Anh')+' phù hợp');
  text('question',mode==='en'?w.word:w.meaning);text('ipa',mode==='en'?w.ipa:'');
- $('audio').hidden=mode==='vi'||!w.audio;$('audio-status').textContent='';
+ $('audio').hidden=mode==='vi'||!hasCardAudio(w);$('audio-status').textContent='';
  $('next').disabled=true;text('next','Chọn đáp án 0–3');empty($('feedback'));empty($('options'));empty($('question-image'));
  text('answer-hint','Chọn một đáp án để xem nghĩa và ví dụ.');
  renderQuestionImage();
@@ -131,7 +134,7 @@ function choose(i){
  var meaning=document.createElement('p');meaning.className='answer-meaning';meaning.textContent=w.word+' '+w.ipa+' — '+w.meaning;
  var example=document.createElement('p');example.textContent=w.explanation;
  add($('feedback'),title,meaning,example);text('answer-hint','Nghĩa và ví dụ');
- $('audio').hidden=!w.audio;$('next').disabled=false;
+ $('audio').hidden=!hasCardAudio(w);$('next').disabled=false;
  text('score',score()+' câu đúng');text('next',index===queue.length-1?'Xem kết quả →':'Câu tiếp theo →');
  recordCompletedQuiz();
  if(mode==='vi')maybeAutoRead();
@@ -159,7 +162,15 @@ $('auto-next').onchange=function(){if(locked)startTimer();};
 $('change-settings').onclick=function(){stopTimer();$('setup').hidden=!$('setup').hidden;if(!$('setup').hidden)$('setup').scrollIntoView(true);};
 document.addEventListener('visibilitychange',function(){if(document.hidden){stopTimer();stopAudio();}});
 function playCardAudio(automatic){
- var w=queue[index];if(!w||!w.audio)return;stopAudio();text('audio-status','');playing=new Audio(w.audio);
+ var w=queue[index];if(!hasCardAudio(w))return;stopAudio();text('audio-status','');
+ if(!w.audio){
+  var utterance=new window.SpeechSynthesisUtterance(w.word);spoken=utterance;utterance.lang=config.speechLang;utterance.rate=0.8;
+  utterance.onerror=function(){if(spoken===utterance)text('audio-status','Không đọc được bằng giọng của thiết bị. Hãy thử lại hoặc kiểm tra giọng tiếng Trung.');};
+  utterance.onend=function(){if(spoken===utterance)spoken=null;};
+  try{window.speechSynthesis.speak(utterance);}catch(e){utterance.onerror();}
+  return;
+ }
+ playing=new Audio(w.audio);
  var currentAudio=playing;
  function failed(){if(playing!==currentAudio)return;text('audio-status',automatic?'Chạm nút ♪ để nghe nếu trình duyệt chặn tự phát.':'Không phát được âm thanh. Hãy thử lại.');}
  playing.onerror=failed;
@@ -191,7 +202,7 @@ function updateUnits(){
  units.sort(function(a,b){return a-b;});empty($('unit'));$('unit').add(new Option('Tất cả bài','0'));
  units.forEach(function(i){$('unit').add(new Option(unitName(Number($('book').value),i),i));});if(units.indexOf(Number(old))!==-1)$('unit').value=old;
 }
-$('book').onchange=updateUnits;
+$('book').onchange=function(){updateUnits();if(learnOnlyBook()){$('activity').value='learn';updateActivitySetup();}};
 function loadData(){
  var request=new XMLHttpRequest();request.open('GET',config.dataFile||'data.json',true);request.timeout=60000;
  function failed(){text('total','Không tải được dữ liệu. Kiểm tra mạng rồi tải lại trang.');$('reload-data').hidden=false;}
@@ -211,7 +222,7 @@ function parseStudyStats(raw){
  if(!parsed||parsed.version!==1||!parsed.lessons||typeof parsed.lessons!=='object')throw new Error('Invalid study history');
  var clean={version:1,completedSessions:safeCount(parsed.completedSessions),readingSessions:safeCount(parsed.readingSessions),lessons:{}};
  Object.keys(parsed.lessons).forEach(function(key){
-  if(config.language){if(!/^[1-6]-[1-9][0-9]{0,3}$/.test(key))return;}
+  if(config.language){if(!/^[1-9][0-9]*-[1-9][0-9]{0,3}$/.test(key)||!config.bookNames[key.split('-')[0]])return;}
   else if(!/^[1-6]-(?:[1-9]|[12][0-9]|30)$/.test(key))return;
   var entry=parsed.lessons[key];
   if(!entry||typeof entry!=='object')return;
@@ -319,6 +330,7 @@ $('stats-help-toggle').onclick=function(){var show=$('stats-help').hidden;$('sta
 
 var activity='quiz',learnSeen={};
 function updateActivitySetup(){
+ if(learnOnlyBook())$('activity').value='learn';
  var learning=$('activity').value==='learn';
  $('quiz-settings').hidden=learning;$('count-settings').hidden=learning;
  text('start',learning?'Bắt đầu học từ →':'Bắt đầu trắc nghiệm →');
@@ -334,7 +346,7 @@ function renderLearning(){
  text('meta',wordMeta(w));text('prompt','Đọc từ, nghĩa và ví dụ');
  if($('toggle-diagram')){$('toggle-diagram').hidden=config.kind==='grammar'||!w.diagram; text('toggle-diagram','Xem sơ đồ / cách viết');}
  text('question',w.word);text('ipa',w.ipa);text('learn-meaning',w.meaning);text('learn-example',w.explanation);
- $('audio').hidden=!w.audio;text('audio-status','');$('next').disabled=false;
+ $('audio').hidden=!hasCardAudio(w);text('audio-status','');$('next').disabled=false;
  text('next',index===queue.length-1?'Hoàn tất lượt học ✓':'Từ tiếp theo →');
  text('keyboard-help','← Từ trước · → Từ tiếp theo');
  renderQuestionImage();requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});maybeAutoRead();

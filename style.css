@@ -156,3 +156,5 @@ html.dark{color-scheme:dark;background:#080808;color:#e8e8e8}
 .dark .level-0{background:#242424;color:#c4c4c4}.dark .level-1{background:#3b4e32;color:#e0eccc}.dark .level-2{background:#627e48;color:#f5ffe6}.dark .level-3{background:#a7c88c;color:#172617}
 .dark .stats-cell[aria-pressed="true"]{outline-color:#c8e6ac}
 .dark button:focus-visible,.dark a:focus-visible,.dark select:focus-visible{outline-color:#c8e6ac}
+
+.collection-reference #toggle-images,.collection-reference #question-image{display:none!important}.source-credit{max-width:1170px;margin:0 auto;padding:0 24px 24px;color:#607467;font-size:13px;line-height:1.7}.source-credit a{color:inherit;text-decoration:underline}.dark .source-credit{color:#bdbdbd}

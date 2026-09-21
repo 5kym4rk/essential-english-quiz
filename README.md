@@ -34,3 +34,13 @@ Check English and Chinese behavior: node test-quiz.cjs and node test-chinese.cjs
 Learning mode shows meanings immediately, supports left/right navigation, and records a completed session after all cards are viewed and Finish is pressed.
 
 Chinese image layout: grammar images and diagram controls are hidden in both learning and quiz modes. Vocabulary learning images are larger on phones. Radical images use available viewport height without a thumbnail cap; in quizzes the image appears before the answer choices, and on phones fixed navigation is reserved.
+
+## HSK reference (LearnLangLab)
+The HSK tham khảo section imports the 20 groups listed by https://learnlanglab.github.io/learn/ on 2026-09-21. This snapshot has 11,909 cards across 600 lessons (9,996 distinct Hanzi/pinyin/meaning triples across groups). Full and split groups intentionally overlap as on the source website. Five exact duplicates within individual groups and two blank records were omitted. Original wording and source mistakes are preserved; this is reference material, not a claim of an official HSK syllabus.
+
+The 20 Q&A cards contain Chinese answers rather than Vietnamese meanings. Their group is learning-only and excluded from quiz pools. Speech uses the device's Chinese voice when SpeechSynthesis is supported, matching the source's approach; no remote audio/image files are available in the source data. Existing Anki audio playback is unchanged.
+
+The page credits and links the source. Only literal data is imported: no source page scripts, tracking, backgrounds or music are executed or copied into the application. The upstream repository did not declare a license at import time; content remains attributed to its respective owners. SHA-256 hashes, per-group counts and skipped records are in reference-import-report.json.
+
+To reproduce: python fetch_reference.py, then node import_reference.cjs. The downloader saves source files under ignored .reference-source. The importer parses JavaScript syntax and accepts only literal arrays/objects/string properties; it never evaluates source JavaScript. It uses the Acorn parser bundled in the local Node runtime.
+Test: node test-reference.cjs. History is isolated under wordcraft-hsk-reference-v1; all existing study records remain unchanged.
