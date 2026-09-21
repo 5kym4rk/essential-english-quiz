@@ -99,3 +99,10 @@ const card=ctx.queue[ctx.index],sound=card.audio;delete card.audio;ctx.maybeAuto
 ctx.Audio=function(){this.play=()=>({'catch':f=>f()});this.pause=()=>{};};ctx.playCardAudio(true);assert(nodes['audio-status'].textContent.length>0,'blocked autoplay gives manual playback hint');
 ctx.localStorage.getItem=()=>{throw Error('blocked');};ctx.localStorage.setItem=()=>{throw Error('blocked');};assert.equal(ctx.readAutoReadPreference(),false);nodes['toggle-auto-read'].onclick();
 console.log('PASS: auto-read toggle, saved preference, learning navigation, quiz directions, missing audio, background stop, blocked playback/storage.');
+
+ctx.autoRead=false;nodes.activity.value='learn';nodes.book.value='0';nodes.unit.value='0';ctx.begin();
+assert.equal(ctx.learningPlan.length,179);assert.equal(ctx.queue.length,20);assert(ctx.queue.every(w=>w.book===1&&w.unit===1));
+const firstLessonCount=ctx.queue.length;for(let i=0;i<firstLessonCount;i++)ctx.advance();assert.equal(nodes['next-lesson'].hidden,false);
+nodes['next-lesson'].onclick();assert.equal(ctx.learningLessonIndex,1);assert(ctx.queue.every(w=>w.book===1&&w.unit===2));assert.equal(nodes.book.value,'1');assert.equal(nodes.unit.value,'2');
+const learnedIds=ctx.queue.map(w=>w.id).sort();const secondLessonCount=ctx.queue.length;for(let i=0;i<secondLessonCount;i++)ctx.advance();nodes['review-lesson'].onclick();assert.equal(ctx.activity,'quiz');assert.deepEqual(ctx.queue.map(w=>w.id).sort(),learnedIds);
+console.log('PASS: all-lessons learning is split by original quiz lessons, next lesson, and exact same-card review.');
