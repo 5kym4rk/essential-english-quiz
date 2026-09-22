@@ -32,6 +32,26 @@ $('toggle-auto-read').onclick=function(){
  if(autoRead)maybeAutoRead();else stopAudio();
 };
 updateAutoReadButton();
+// Keep a small look-ahead window; never download a whole lesson in advance.
+var prefetchedPictures=[];
+function prefetchNextPictures(){
+ var connection=window.navigator&&window.navigator.connection;
+ if(!showImages||config.kind==='grammar'||config.noImages||document.hidden||
+    (connection&&connection.saveData))return;
+ for(var offset=1;offset<=2&&index+offset<queue.length;offset++){
+  var word=queue[index+offset],src=word.image||word.diagram;
+  if(!src||prefetchedPictures.some(function(entry){return entry.src===src;}))continue;
+  var image=document.createElement('img');
+  image.setAttribute('fetchpriority','low');image.setAttribute('decoding','async');
+  var entry={src:src,image:image};prefetchedPictures.push(entry);
+  if(prefetchedPictures.length>6)prefetchedPictures.shift();
+  image.onerror=(function(failed){return function(){
+   var position=prefetchedPictures.indexOf(failed);
+   if(position!==-1)prefetchedPictures.splice(position,1);
+  };}(entry));
+  image.src=src;
+ }
+}
 function renderQuestionImage(){
  var host=$('question-image'),w=queue[index];
  empty(host);host.hidden=!showImages||config.kind==='grammar'||!!config.noImages;
@@ -42,8 +62,15 @@ function renderQuestionImage(){
  var figure=document.createElement('figure');figure.className='illustration';
  var image=document.createElement('img');image.alt='\u1ea2nh minh h\u1ecda t\u1eeb v\u1ef1ng';
  image.onerror=function(){if(figure.parentNode)figure.parentNode.removeChild(figure);};
- image.onload=schedulePictureFit;
+ image.setAttribute('fetchpriority','high');image.setAttribute('decoding','async');
+ var prepared=false;
+ function ready(){
+  if(prepared||host.querySelector('img')!==image)return;
+  prepared=true;schedulePictureFit();prefetchNextPictures();
+ }
+ image.onload=ready;
  image.src=showDiagram&&w.diagram?w.diagram:(w.image||w.diagram);add(figure,image);add(host,figure);
+ if(image.complete&&image.naturalWidth)ready();
 }
 $('toggle-images').onclick=function(){
  showImages=!showImages;

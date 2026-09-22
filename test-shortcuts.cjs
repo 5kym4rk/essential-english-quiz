@@ -71,7 +71,7 @@ for(const pair of [['n','next-lesson'],['v','review-lesson'],['q','retry'],['s',
 for(const name of ['index.html','chinese-vocabulary.html','chinese-grammar.html','chinese-radicals.html','hsk-reference.html']){
  const page=fs.readFileSync(name,'utf8');
  for(const id of Object.keys(ctx.shortcutButtons))assert(page.includes('id="'+id+'"'),name+' '+id);
- assert(page.includes('app.js?v=27'));
+ assert(page.includes('app.js?v=29'));
 }
 console.log('PASS: shortcut actions, help, stats, result actions, native Enter, modifiers, repeated keys, editable fields, hidden/disabled controls and all five pages.');
 `,{require,console});
