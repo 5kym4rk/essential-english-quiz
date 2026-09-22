@@ -224,18 +224,25 @@ $('shortcut-help-toggle').onclick=function(){
  schedulePictureFit();
 };
 $('shortcut-help-close').onclick=$('shortcut-help-toggle').onclick;
+// Some Vietnamese input methods rewrite the second D keydown as a composition
+// event. Use keyup for the theme shortcut so each released D toggles once.
+function isThemeShortcut(e){
+ var key=String(e.key||'').toLowerCase();
+ return e.code==='KeyD'||(e.which||e.keyCode)===68||key==='d'||key==='\u0111';
+}
+function canUseThemeShortcut(e){
+ var target=e.target,tag=(target.tagName||'').toUpperCase();
+ return !e.ctrlKey&&!e.altKey&&!e.metaKey&&!e.repeat&&
+  tag!=='INPUT'&&tag!=='TEXTAREA'&&!target.isContentEditable;
+}
+document.addEventListener('keyup',function(e){
+ if(!canUseThemeShortcut(e)||!isThemeShortcut(e))return;
+ if(shortcutClick(!$('quiz').hidden&&$('stats-panel').hidden?'study-theme-toggle':'theme-toggle'))e.preventDefault();
+});
 document.addEventListener('keydown',function(e){
  var target=e.target,tag=(target.tagName||'').toUpperCase();
- if(e.ctrlKey||e.altKey||e.metaKey||e.repeat)return;
- // Theme switching also works from selectors and with a Vietnamese IME.
- // Keep actual text editing untouched.
- if(tag==='INPUT'||tag==='TEXTAREA'||target.isContentEditable)return;
- var themeKey=e.code==='KeyD'||(!e.code&&(e.which||e.keyCode)===68)||
-  (!e.code&&String(e.key||'').toLowerCase()==='d');
- if(themeKey){
-  if(shortcutClick(!$('quiz').hidden&&$('stats-panel').hidden?'study-theme-toggle':'theme-toggle'))e.preventDefault();
-  return;
- }
+ if(!canUseThemeShortcut(e))return;
+ if(isThemeShortcut(e)){e.preventDefault();return;}
  if(e.isComposing||tag==='SELECT')return;
  var code=e.which||e.keyCode;
  var key=e.key||({13:'Enter',27:'Escape',37:'ArrowLeft',39:'ArrowRight'}[code])||

@@ -3,7 +3,7 @@ const fs=require('fs'),vm=require('vm');
 const harness=fs.readFileSync('test-quiz.cjs','utf8').split('vm.createContext(ctx);')[0];
 vm.runInNewContext(harness+String.raw`
 vm.createContext(ctx);vm.runInContext(source,ctx);
-function press(key,extra,target){let prevented=false;events.keydown(Object.assign({key,target:target||{tagName:'BODY'},preventDefault(){prevented=true;}},extra));return prevented;}
+function press(key,extra,target){let prevented=false;const event=Object.assign({key,target:target||{tagName:'BODY'},preventDefault(){prevented=true;}},extra);events.keydown(event);events.keyup(event);return prevented;}
 nodes.activity.value='learn';ctx.begin();
 assert.equal(press('ArrowRight'),true);assert.equal(ctx.index,1);
 assert.equal(press('Enter',{}, {tagName:'BUTTON'}),false);assert.equal(ctx.index,1);
@@ -29,6 +29,16 @@ for(const target of [{tagName:'BODY'},{tagName:'BUTTON'},{tagName:'SELECT'}]){
   const before=themeCalls;assert(press(event.key,event,target));assert.equal(themeCalls,before+1,'theme works immediately');
  }
 }
+// A physical press must toggle only on release, including consecutive D presses
+// whose keydown was swallowed or rewritten by an input method.
+for(const down of [{key:'d',code:'KeyD'},{key:'Process',keyCode:229,isComposing:true},null,{key:'\u0111',isComposing:true}]){
+ const before=themeCalls;
+ const base={target:{tagName:'BODY'},preventDefault(){}};
+ if(down)events.keydown(Object.assign({},base,down));
+ assert.equal(themeCalls,before,'keydown must not toggle');
+ events.keyup(Object.assign({},base,{key:'d',code:'KeyD'}));
+ assert.equal(themeCalls,before+1,'each consecutive release toggles once');
+}
 const beforeTheme=themeCalls;
 for(const target of [{tagName:'INPUT'},{tagName:'TEXTAREA'},{tagName:'DIV',isContentEditable:true}])press('d',{code:'KeyD'},target);
 for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true}])press('d',extra);
@@ -42,7 +52,7 @@ for(const pair of [['n','next-lesson'],['v','review-lesson'],['q','retry'],['s',
 for(const name of ['index.html','chinese-vocabulary.html','chinese-grammar.html','chinese-radicals.html','hsk-reference.html']){
  const page=fs.readFileSync(name,'utf8');
  for(const id of Object.keys(ctx.shortcutButtons))assert(page.includes('id="'+id+'"'),name+' '+id);
- assert(page.includes('app.js?v=24'));
+ assert(page.includes('app.js?v=25'));
 }
 console.log('PASS: shortcut actions, help, stats, result actions, native Enter, modifiers, repeated keys, editable fields, hidden/disabled controls and all five pages.');
 `,{require,console});
