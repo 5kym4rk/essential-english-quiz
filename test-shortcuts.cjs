@@ -23,6 +23,16 @@ for(const pair of [['a','audio'],['r','toggle-auto-read'],['i','toggle-images'],
  nodes[pair[1]].disabled=true;press(pair[0]);assert.equal(calls,1,'disabled '+pair[1]);nodes[pair[1]].disabled=false;
  nodes[pair[1]].hidden=true;press(pair[0]);assert.equal(calls,1,'hidden '+pair[1]);nodes[pair[1]].hidden=false;
 }
+let themeCalls=0;nodes['study-theme-toggle'].onclick=()=>themeCalls++;
+for(const target of [{tagName:'BODY'},{tagName:'BUTTON'},{tagName:'SELECT'}]){
+ for(const event of [{key:'d'},{key:'D'},{key:'Process',code:'KeyD',isComposing:true,keyCode:229},{key:'Unidentified',keyCode:68}]){
+  const before=themeCalls;assert(press(event.key,event,target));assert.equal(themeCalls,before+1,'theme works immediately');
+ }
+}
+const beforeTheme=themeCalls;
+for(const target of [{tagName:'INPUT'},{tagName:'TEXTAREA'},{tagName:'DIV',isContentEditable:true}])press('d',{code:'KeyD'},target);
+for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true}])press('d',extra);
+assert.equal(themeCalls,beforeTheme,'text input and browser shortcuts preserved');
 const parent=new El('section');parent.hidden=true;nodes.audio.parentNode=parent;
 let audioCalls=0;nodes.audio.onclick=()=>audioCalls++;press('a');assert.equal(audioCalls,0,'hidden ancestor');delete nodes.audio.parentNode;
 nodes.quiz.hidden=true;nodes.result.hidden=false;nodes.setup.hidden=true;
@@ -32,7 +42,7 @@ for(const pair of [['n','next-lesson'],['v','review-lesson'],['q','retry'],['s',
 for(const name of ['index.html','chinese-vocabulary.html','chinese-grammar.html','chinese-radicals.html','hsk-reference.html']){
  const page=fs.readFileSync(name,'utf8');
  for(const id of Object.keys(ctx.shortcutButtons))assert(page.includes('id="'+id+'"'),name+' '+id);
- assert(page.includes('app.js?v=23'));
+ assert(page.includes('app.js?v=24'));
 }
 console.log('PASS: shortcut actions, help, stats, result actions, native Enter, modifiers, repeated keys, editable fields, hidden/disabled controls and all five pages.');
 `,{require,console});

@@ -226,8 +226,17 @@ $('shortcut-help-toggle').onclick=function(){
 $('shortcut-help-close').onclick=$('shortcut-help-toggle').onclick;
 document.addEventListener('keydown',function(e){
  var target=e.target,tag=(target.tagName||'').toUpperCase();
- if(e.ctrlKey||e.altKey||e.metaKey||e.isComposing||e.repeat||
-    tag==='SELECT'||tag==='INPUT'||tag==='TEXTAREA'||target.isContentEditable)return;
+ if(e.ctrlKey||e.altKey||e.metaKey||e.repeat)return;
+ // Theme switching also works from selectors and with a Vietnamese IME.
+ // Keep actual text editing untouched.
+ if(tag==='INPUT'||tag==='TEXTAREA'||target.isContentEditable)return;
+ var themeKey=e.code==='KeyD'||(!e.code&&(e.which||e.keyCode)===68)||
+  (!e.code&&String(e.key||'').toLowerCase()==='d');
+ if(themeKey){
+  if(shortcutClick(!$('quiz').hidden&&$('stats-panel').hidden?'study-theme-toggle':'theme-toggle'))e.preventDefault();
+  return;
+ }
+ if(e.isComposing||tag==='SELECT')return;
  var code=e.which||e.keyCode;
  var key=e.key||({13:'Enter',27:'Escape',37:'ArrowLeft',39:'ArrowRight'}[code])||
   (code>=96&&code<=105?String(code-96):String.fromCharCode(code));
@@ -242,7 +251,6 @@ document.addEventListener('keydown',function(e){
   if(!$('quiz').hidden&&!$('setup').hidden)click('change-settings');
   return;
  }
- if(key==='d'){click(!$('quiz').hidden&&$('stats-panel').hidden?'study-theme-toggle':'theme-toggle');return;}
  if(!$('shortcut-help').hidden)return;
  if(!$('stats-panel').hidden){
   if(key==='arrowleft'||key==='left')click('stats-prev');
