@@ -173,3 +173,11 @@ html.dark #shortcut-help{background:#141414;color:#eee}
 #shortcut-help-toggle{padding:6px 10px;font-size:13px}
 
 #shortcut-help-close{float:right;padding:5px 10px}
+
+/* Leave room for keyboard focus rings, including browsers without flex gap. */
+header{height:auto;min-height:112px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+header>.brand{flex:0 0 auto;margin:8px 16px 8px 0}
+header>span{flex:1 1 220px;text-align:right;margin:8px 0}
+header>button{flex:0 0 auto;margin-top:8px;margin-bottom:8px}
+header .theme-toggle,header #shortcut-help-toggle{margin-left:16px;min-height:36px;white-space:nowrap}
+@media(max-width:680px){header{min-height:85px}header>.brand{margin-right:auto}}
