@@ -16,6 +16,25 @@ press('h');assert.equal(nodes['shortcut-help'].hidden,false);press('ArrowRight')
 press('Escape');assert.equal(nodes['shortcut-help'].hidden,true);
 press('t');assert.equal(nodes['stats-panel'].hidden,false);press('0');assert.equal(ctx.index,1);
 press('b');assert(nodes['stats-book'].focused);press('Escape');assert.equal(nodes['stats-panel'].hidden,true);
+// Simulate Enter's native click when it is not prevented: stale help focus
+// must not reopen help after a numeric answer.
+nodes.activity.value='quiz';ctx.begin();
+const helpButton=nodes['shortcut-help-toggle'];helpButton.tagName='BUTTON';
+press('0');const quizIndex=ctx.index;
+if(!press('Enter',{},helpButton))helpButton.click();
+assert.equal(ctx.index,quizIndex+1,'Enter advances despite focused help button');
+assert.equal(nodes['shortcut-help'].hidden,true,'Enter does not reopen shortcuts');
+assert.equal(ctx.locked,false);
+for(const id of ['audio','toggle-images','next']){
+ ctx.choose(0);const before=ctx.index;nodes[id].tagName='BUTTON';
+ assert(press('Enter',{},nodes[id]));assert.equal(ctx.index,before+1);
+}
+ctx.choose(0);press('h');const helpIndex=ctx.index;
+assert.equal(press('Enter',{},helpButton),false,'open help preserves native Enter');
+assert.equal(ctx.index,helpIndex);press('Escape');
+press('t');assert.equal(press('Enter',{},helpButton),false,'stats preserves native Enter');
+assert.equal(ctx.index,helpIndex);press('Escape');
+nodes.activity.value='learn';ctx.begin();
 const spyIds=['audio','toggle-auto-read','toggle-images','toggle-diagram','pause-auto','study-theme-toggle','change-settings'];
 for(const id of spyIds){nodes[id].hidden=false;nodes[id].disabled=false;}
 for(const pair of [['a','audio'],['r','toggle-auto-read'],['i','toggle-images'],['g','toggle-diagram'],['p','pause-auto'],['d','study-theme-toggle'],['c','change-settings']]){
@@ -52,7 +71,7 @@ for(const pair of [['n','next-lesson'],['v','review-lesson'],['q','retry'],['s',
 for(const name of ['index.html','chinese-vocabulary.html','chinese-grammar.html','chinese-radicals.html','hsk-reference.html']){
  const page=fs.readFileSync(name,'utf8');
  for(const id of Object.keys(ctx.shortcutButtons))assert(page.includes('id="'+id+'"'),name+' '+id);
- assert(page.includes('app.js?v=25'));
+ assert(page.includes('app.js?v=27'));
 }
 console.log('PASS: shortcut actions, help, stats, result actions, native Enter, modifiers, repeated keys, editable fields, hidden/disabled controls and all five pages.');
 `,{require,console});

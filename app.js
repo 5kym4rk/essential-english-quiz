@@ -248,6 +248,11 @@ document.addEventListener('keydown',function(e){
  var key=e.key||({13:'Enter',27:'Escape',37:'ArrowLeft',39:'ArrowRight'}[code])||
   (code>=96&&code<=105?String(code-96):String.fromCharCode(code));
  key=key.toLowerCase();
+ // After a quiz answer, Enter takes priority over the previously focused button.
+ if(key==='enter'&&activity==='quiz'&&locked&&!$('quiz').hidden&&
+    $('stats-panel').hidden&&$('shortcut-help').hidden){
+  e.preventDefault();advance();return;
+ }
  // Preserve native activation of focused buttons and links.
  if((key==='enter'||key===' ')&&(tag==='BUTTON'||tag==='A'||tag==='SUMMARY'))return;
  function click(id){if(shortcutClick(id)){e.preventDefault();return true;}return false;}
