@@ -181,3 +181,8 @@ header>span{flex:1 1 220px;text-align:right;margin:8px 0}
 header>button{flex:0 0 auto;margin-top:8px;margin-bottom:8px}
 header .theme-toggle,header #shortcut-help-toggle{margin-left:16px;min-height:36px;white-space:nowrap}
 @media(max-width:680px){header{min-height:85px}header>.brand{margin-right:auto}}
+
+/* Hide keyboard help on phone-sized and touch-first screens. */
+@media (max-width:680px), (hover:none), (pointer:coarse){
+ #shortcut-help-toggle{display:none}
+}
