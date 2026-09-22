@@ -191,19 +191,87 @@ function playCardAudio(automatic){
  try{var result=playing.play();if(result&&typeof result['catch']==='function')result['catch'](failed);}catch(e){failed();}
 }
 $('audio').onclick=function(){playCardAudio(false);};
+var shortcutButtons={
+ 'start':'S','reload-data':'L','change-settings':'C',
+ 'open-stats':'T','study-stats':'T','result-stats':'T','close-stats':'Esc',
+ 'audio':'A','toggle-auto-read':'R','toggle-images':'I','toggle-diagram':'G',
+ 'theme-toggle':'D','study-theme-toggle':'D','pause-auto':'P',
+ 'previous-word':'←','next':'Enter / →','next-lesson':'N','review-lesson':'V',
+ 'retry':'Q','again':'S','stats-prev':'←','stats-next':'→','stats-help-toggle':'F',
+ 'shortcut-help-toggle':'H','shortcut-help-close':'Esc'
+};
+function shortcutAvailable(node){
+ if(!node||node.disabled)return false;
+ for(var parent=node;parent;parent=parent.parentNode)if(parent.hidden)return false;
+ return true;
+}
+function shortcutClick(id){
+ var node=$(id);if(!shortcutAvailable(node))return false;
+ node.click();return true;
+}
+Object.keys(shortcutButtons).forEach(function(id){
+ var node=$(id);if(!node)return;
+ node.setAttribute('data-shortcut',shortcutButtons[id]);
+ node.setAttribute('title','Phím: '+shortcutButtons[id]);
+});
+var shortcutReturnFocus=null;
+$('shortcut-help-toggle').onclick=function(){
+ if($('shortcut-help').hidden)shortcutReturnFocus=document.activeElement;
+ var panel=$('shortcut-help');panel.hidden=!panel.hidden;
+ $('shortcut-help-toggle').setAttribute('aria-expanded',panel.hidden?'false':'true');
+ if(!panel.hidden)$('shortcut-help-close').focus();
+ else if(shortcutReturnFocus&&shortcutReturnFocus.focus)shortcutReturnFocus.focus();
+ schedulePictureFit();
+};
+$('shortcut-help-close').onclick=$('shortcut-help-toggle').onclick;
 document.addEventListener('keydown',function(e){
- var tag=e.target.tagName;
- if(['SELECT','INPUT','TEXTAREA'].indexOf(tag)!==-1||e.ctrlKey||e.altKey||e.metaKey||$('quiz').hidden||!$('stats-panel').hidden)return;
- var key=e.key;
- if(!key){var code=e.which||e.keyCode;key=code>=96&&code<=105?String(code-96):code===13?'Enter':String.fromCharCode(code);}
- if(activity==='learn'){
-  var code=e.which||e.keyCode;
-  if(key==='ArrowRight'||key==='Right'||code===39){e.preventDefault();if(!e.repeat)advance();}
-  else if(key==='ArrowLeft'||key==='Left'||code===37){e.preventDefault();if(!e.repeat)previousWord();}
+ var target=e.target,tag=(target.tagName||'').toUpperCase();
+ if(e.ctrlKey||e.altKey||e.metaKey||e.isComposing||e.repeat||
+    tag==='SELECT'||tag==='INPUT'||tag==='TEXTAREA'||target.isContentEditable)return;
+ var code=e.which||e.keyCode;
+ var key=e.key||({13:'Enter',27:'Escape',37:'ArrowLeft',39:'ArrowRight'}[code])||
+  (code>=96&&code<=105?String(code-96):String.fromCharCode(code));
+ key=key.toLowerCase();
+ // Preserve native activation of focused buttons and links.
+ if((key==='enter'||key===' ')&&(tag==='BUTTON'||tag==='A'||tag==='SUMMARY'))return;
+ function click(id){if(shortcutClick(id)){e.preventDefault();return true;}return false;}
+ if(key==='h'){click('shortcut-help-toggle');return;}
+ if(key==='escape'||key==='esc'){
+  if(!$('shortcut-help').hidden){click('shortcut-help-toggle');return;}
+  if(!$('stats-panel').hidden){click('close-stats');return;}
+  if(!$('quiz').hidden&&!$('setup').hidden)click('change-settings');
   return;
  }
- if(/^[0-3]$/.test(key)){e.preventDefault();choose(Number(key));}
- else if(key==='Enter'&&locked){e.preventDefault();advance();}
+ if(key==='d'){click(!$('quiz').hidden&&$('stats-panel').hidden?'study-theme-toggle':'theme-toggle');return;}
+ if(!$('shortcut-help').hidden)return;
+ if(!$('stats-panel').hidden){
+  if(key==='arrowleft'||key==='left')click('stats-prev');
+  else if(key==='arrowright'||key==='right')click('stats-next');
+  else if(key==='f')click('stats-help-toggle');
+  else if(key==='t')click('close-stats');
+  else if(key==='b'){$('stats-book').focus();e.preventDefault();}
+  return;
+ }
+ if(key==='t'){click(!$('quiz').hidden?'study-stats':!$('result').hidden?'result-stats':'open-stats');return;}
+ if(key==='c'){if(click('change-settings')&&!$('setup').hidden)$('activity').focus();return;}
+ if(!$('setup').hidden){
+  var fields={m:'activity',b:'book',u:'unit',o:'mode',j:'auto-next'};
+  if(fields[key]&&shortcutAvailable($(fields[key]))){$(fields[key]).focus();e.preventDefault();return;}
+  if(key==='s'){click('start');return;}
+  if(key==='l'){click('reload-data');return;}
+ }
+ if(!$('quiz').hidden){
+  var actions={a:'audio',r:'toggle-auto-read',i:'toggle-images',g:'toggle-diagram',p:'pause-auto'};
+  if(actions[key]){click(actions[key]);return;}
+  if(activity==='learn'){
+   if(key==='arrowleft'||key==='left'){e.preventDefault();previousWord();}
+   else if(key==='arrowright'||key==='right'||key==='enter'){e.preventDefault();advance();}
+  }else if(/^[0-3]$/.test(key)){e.preventDefault();choose(Number(key));}
+  else if((key==='enter'||key==='arrowright'||key==='right')&&locked){e.preventDefault();advance();}
+ }else if(!$('result').hidden){
+  var resultActions={n:'next-lesson',v:'review-lesson',q:'retry',s:'again'};
+  if(resultActions[key])click(resultActions[key]);
+ }
 });
 if(config.bookNames){
  empty($('book'));$('book').add(new Option('Tất cả cấp / nhóm','0'));empty($('stats-book'));

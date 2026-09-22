@@ -5,12 +5,12 @@ class El{
  constructor(tag){this.tagName=tag;this.children=[];this.style={};this.hidden=false;this.disabled=false;this.value='';this.classList={add(){},remove(){}};}
  appendChild(n){n.parentNode=this;this.children.push(n);return n;}removeChild(n){this.children.splice(this.children.indexOf(n),1);}
  get firstChild(){return this.children[0];}get lastElementChild(){return this.children[this.children.length-1];}
- setAttribute(k,v){this[k]=v;}focus(){}
+ setAttribute(k,v){this[k]=v;}focus(){this.focused=true;}click(){if(!this.disabled&&this.onclick)this.onclick();}
  add(n){this.appendChild(n);}querySelector(tag){for(const c of this.children){if(c.tagName===tag)return c;const found=c.querySelector(tag);if(found)return found;}return null;}
  getBoundingClientRect(){return {top:0,bottom:500,height:120};}scrollIntoView(){}
 }
 const nodes={};ids.forEach(id=>nodes[id]=new El('div'));
-nodes['stats-panel'].hidden=true;nodes['quiz'].hidden=true;
+nodes['shortcut-help'].hidden=true;nodes['stats-panel'].hidden=true;nodes['quiz'].hidden=true;
 nodes.activity.value='quiz';nodes.book.value='1';nodes.unit.value='0';nodes.mode.value='en';nodes['auto-next'].value='0';
 const events={},intervals=new Map();let timerid=0;
 const ctx={console,JSON,Math,Date,document:{hidden:false,body:new El('body'),getElementById:id=>{assert(nodes[id],id);return nodes[id];},createElement:tag=>new El(tag),addEventListener:(k,f)=>events[k]=f},window:{innerHeight:720,matchMedia:()=>({matches:false}),addEventListener(){},scrollTo(){}},localStorage:{getItem(){return null;},setItem(){}},Option:function(t,v){this.textContent=t;this.value=v;},XMLHttpRequest:function(){this.open=()=>{};this.send=()=>{this.status=200;this.responseText=JSON.stringify(data);this.onload();};},Audio:function(){this.play=()=>undefined;this.pause=()=>{};},requestAnimationFrame:f=>{f();return 1;},cancelAnimationFrame(){},setInterval:f=>{intervals.set(++timerid,f);return timerid;},clearInterval:id=>intervals.delete(id)};
