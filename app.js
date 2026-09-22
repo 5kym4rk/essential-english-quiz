@@ -38,13 +38,13 @@ function prefetchNextPictures(){
  var connection=window.navigator&&window.navigator.connection;
  if(!showImages||config.kind==='grammar'||config.noImages||document.hidden||
     (connection&&connection.saveData))return;
- for(var offset=1;offset<=2&&index+offset<queue.length;offset++){
+ for(var offset=1;offset<=6&&index+offset<queue.length;offset++){
   var word=queue[index+offset],src=word.image||word.diagram;
   if(!src||prefetchedPictures.some(function(entry){return entry.src===src;}))continue;
   var image=document.createElement('img');
   image.setAttribute('fetchpriority','low');image.setAttribute('decoding','async');
   var entry={src:src,image:image};prefetchedPictures.push(entry);
-  if(prefetchedPictures.length>6)prefetchedPictures.shift();
+  if(prefetchedPictures.length>12)prefetchedPictures.shift();
   image.onerror=(function(failed){return function(){
    var position=prefetchedPictures.indexOf(failed);
    if(position!==-1)prefetchedPictures.splice(position,1);

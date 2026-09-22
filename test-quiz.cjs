@@ -114,17 +114,17 @@ nodes.activity.value='learn';nodes.book.value='1';nodes.unit.value='1';ctx.showI
 ctx.prefetchedPictures=[];ctx.begin();
 assert.equal(ctx.prefetchedPictures.length,0);
 const currentPicture=nodes['question-image'].querySelector('img');currentPicture.onload();
-assert.deepEqual(Array.from(ctx.prefetchedPictures,e=>e.src),[ctx.queue[1].image,ctx.queue[2].image]);
-currentPicture.onload();assert.equal(ctx.prefetchedPictures.length,2,'no duplicate warm-up');
+assert.deepEqual(Array.from(ctx.prefetchedPictures,e=>e.src),Array.from(ctx.queue.slice(1,7),word=>word.image));
+currentPicture.onload();assert.equal(ctx.prefetchedPictures.length,6,'no duplicate warm-up');
 ctx.advance();nodes['question-image'].querySelector('img').onload();
-assert.equal(ctx.prefetchedPictures.length,3,'only new upcoming picture is requested');
+assert.equal(ctx.prefetchedPictures.length,7,'only new upcoming picture is requested');
 ctx.prefetchedPictures=[];currentPicture.onload();assert.equal(ctx.prefetchedPictures.length,0,'stale load ignored');
 ctx.showImages=false;ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0);
 ctx.showImages=true;ctx.document.hidden=true;ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0);
 ctx.document.hidden=false;ctx.window.navigator={connection:{saveData:true}};ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0);
 ctx.window.navigator={};ctx.config.noImages=true;ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0);delete ctx.config.noImages;
 ctx.config.kind='grammar';ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0);delete ctx.config.kind;
-for(let i=0;i<15;i++){ctx.index=i;ctx.prefetchNextPictures();assert(ctx.prefetchedPictures.length<=6);}
+for(let i=0;i<15;i++){ctx.index=i;ctx.prefetchNextPictures();assert(ctx.prefetchedPictures.length<=12);}
 const failedPicture=ctx.prefetchedPictures[0];failedPicture.image.onerror();assert(!ctx.prefetchedPictures.includes(failedPicture),'failed warm-up can retry');
 ctx.prefetchedPictures=[];ctx.index=ctx.queue.length-1;ctx.prefetchNextPictures();assert.equal(ctx.prefetchedPictures.length,0,'lesson boundary');
 console.log('PASS: bounded image look-ahead, current-image priority, duplicate/stale loads, disabled images, background/data-saving mode, failure retry and lesson boundary.');
