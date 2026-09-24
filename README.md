@@ -44,3 +44,7 @@ The page credits and links the source. Only literal data is imported: no source 
 
 To reproduce: python fetch_reference.py, then node import_reference.cjs. The downloader saves source files under ignored .reference-source. The importer parses JavaScript syntax and accepts only literal arrays/objects/string properties; it never evaluates source JavaScript. It uses the Acorn parser bundled in the local Node runtime.
 Test: node test-reference.cjs. History is isolated under wordcraft-hsk-reference-v1; all existing study records remain unchanged.
+
+## Ngôn ngữ kỹ thuật
+
+technical.html: 4.675 mục Anh–Trung–Việt, 14 chuyên ngành, 96 chủ đề và 270 bài tối đa 20 mục. Nguồn: Technical_Master_EN_ZH_VI_v2_FIXED.apkg do người dùng cung cấp; mỗi ghi chú chỉ nhập một lần (ba mẫu thẻ Anki dùng chung nội dung). Không có media. Học tiếng Anh hoặc Trung, ôn hai chiều với tiếng Việt; đọc bằng giọng hệ thống nếu hỗ trợ. Thống kê dùng khóa riêng wordcraft-technical-v1; hai ngôn ngữ cùng tính vào bài tương ứng. Chạy python import_technical.py <đường_dẫn_apkg> để tạo lại dữ liệu. Báo cáo số lượng và SHA-256: technical-import-report.json.

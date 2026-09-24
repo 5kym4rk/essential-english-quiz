@@ -9,7 +9,7 @@ if(window.wordcraftTheme)window.wordcraftTheme.init();
 var config=window.wordcraftConfig||{},showDiagram=false;
 if(config.kind)document.body.classList.add('collection-'+config.kind);
 function bookName(n){return config.bookNames?config.bookNames[n]:'Bộ '+n;}
-function unitName(b,u){return config.unitNames&&config.unitNames[b+'-'+u]?'NP '+u+' · '+config.unitNames[b+'-'+u]:'Bài '+pad(u);}
+function unitName(b,u){return config.unitNames&&config.unitNames[b+'-'+u]?(config.unitPrefix||'NP ')+u+' · '+config.unitNames[b+'-'+u]:'Bài '+pad(u);}
 function wordMeta(w){return bookName(w.book)+' · '+unitName(w.book,w.unit);}
 var words=[],queue=[],index=0,answers=[],choices=[],locked=false,mode='en',playing=null;
 var timer=null,remaining=0,pictureFrame=null,spoken=null;
@@ -98,7 +98,27 @@ function startTimer(){
 function history(){try{var s=JSON.parse(localStorage.getItem(config.historyKey||'wordcraft-last'));if(s)text('history','Lượt gần nhất: '+s.correct+'/'+s.total+' câu đúng');}catch(e){}}
 function score(){return answers.filter(function(a){return a.correct;}).length;}
 var learningPlan=[],learningLessonIndex=0;
+var technicalBaseWords=null;
+function updateTechnicalLabels(){
+ var label=$('term-language').value==='zh'?'Trung':'Anh';
+ $('mode').options[0].text=label+' → Việt';
+ $('mode').options[1].text='Việt → '+label;
+}
+function prepareTechnicalWords(){
+ if(config.kind!=='technical')return;
+ if(!technicalBaseWords)technicalBaseWords=words;
+ var chinese=$('term-language').value==='zh';
+ config.language=chinese?'tiếng Trung':'tiếng Anh';config.speechLang=chinese?'zh-CN':'en-US';
+ words=technicalBaseWords.map(function(original){
+  var word={};Object.keys(original).forEach(function(key){word[key]=original[key];});
+  word.word=chinese?word.chinese:word.english;word.ipa=chinese?word.pinyin:'';
+  word.explanation=(chinese?'English: '+word.english:'中文: '+word.chinese+' · '+word.pinyin)+'\n'+word.subdomain+(word.note?'\n'+word.note:'');
+  return word;
+ });
+}
+if(config.kind==='technical')$('term-language').onchange=updateTechnicalLabels;
 function begin(retry,continueLesson){
+ prepareTechnicalWords();
  stopTimer();stopAudio();mode=$('mode').value;activity=retry?'quiz':$('activity').value;learnSeen={};
  var pool=words.filter(function(w){return (activity==='learn'||!w.learnOnly)&&(!Number($('book').value)||w.book===Number($('book').value))&&(!Number($('unit').value)||w.unit===Number($('unit').value));});
  if(activity==='learn'){
@@ -335,7 +355,7 @@ $('book').onchange=function(){updateUnits();if(learnOnlyBook()){$('activity').va
 function loadData(){
  var request=new XMLHttpRequest();request.open('GET',config.dataFile||'data.json',true);request.timeout=60000;
  function failed(){text('total','Không tải được dữ liệu. Kiểm tra mạng rồi tải lại trang.');$('reload-data').hidden=false;}
- request.onload=function(){if(request.status<200||request.status>=300){failed();return;}try{words=JSON.parse(request.responseText);updateUnits();text('total',config.language?words.length+' thẻ · '+lessonCatalog().length+' bài':'3.600 từ · 6 bộ · 179 nhóm bài');$('start').disabled=false;$('open-stats').disabled=false;$('reload-data').hidden=true;history();}catch(e){failed();}};
+ request.onload=function(){if(request.status<200||request.status>=300){failed();return;}try{words=JSON.parse(request.responseText);if(config.kind==='technical'){technicalBaseWords=null;prepareTechnicalWords();updateTechnicalLabels();}updateUnits();text('total',config.language?words.length+' thẻ · '+lessonCatalog().length+' bài':'3.600 từ · 6 bộ · 179 nhóm bài');$('start').disabled=false;$('open-stats').disabled=false;$('reload-data').hidden=true;history();}catch(e){failed();}};
  request.onerror=failed;request.ontimeout=failed;request.send();
 }
 $('reload-data').onclick=loadData;
