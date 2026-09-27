@@ -1,1 +1,196 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="4.675 thuật ngữ Anh–Trung–Việt, 14 chuyên ngành kỹ thuật."><title>Wordcraft · Ngôn ngữ kỹ thuật</title><link rel="icon" href="favicon.svg"><script src="theme.js?v=18"></script><link rel="stylesheet" href="style.css?v=28"><script src="config-technical.js?v=31"></script><script src="app.js?v=32" defer></script></head><body class="chinese"><header><a class="brand" href="./"><b>W.</b> WORDCRAFT</a><span>Thuật ngữ kỹ thuật · Anh – Trung – Việt.</span><button id="theme-toggle" type="button" class="secondary theme-toggle" aria-label="Ch&#7871; &#273;&#7897; t&#7889;i" aria-pressed="false">T&#7889;i: T&#7855;t</button><button id="shortcut-help-toggle" type="button" class="secondary" aria-controls="shortcut-help" aria-expanded="false">Phím tắt</button></header><section id="shortcut-help" hidden aria-label="Hướng dẫn phím tắt"><button id="shortcut-help-close" type="button" class="secondary">Đóng</button><strong>Dùng bàn phím</strong><p>H: mở / đóng hướng dẫn · Esc: đóng hướng dẫn hoặc quay lại từ thống kê.</p><p>0–3: chọn đáp án · ←: từ trước · → / Enter: tiếp tục.</p><p>A: nghe · R: tự đọc · I: ảnh · G: sơ đồ · D: sáng / tối · P: dừng tự chuyển.</p><p>S: bắt đầu / học lại · C: đổi bài · T: thống kê · N: bài tiếp · V: ôn bài vừa học · Q: luyện câu sai · L: tải lại khi lỗi.</p><p>Trong phần cài đặt: M: cách học · B: bộ · U: bài · O: chiều ôn · J: tự chuyển. Dùng ↑ / ↓ để chọn, Tab để rời ô.</p><p>Trong thống kê: ← / →: đổi trang · B: chọn bộ · F: cách tính lượt học.</p><p>Tab / Shift+Tab: đến mọi nút, liên kết và ô thống kê; Enter / Space: kích hoạt nút đang chọn. Phím D vẫn dùng được trong ô chọn; các phím tắt chữ khác tạm dừng khi đang nhập hoặc chọn trong ô.</p></section><nav class="subjects" aria-label="Chọn nội dung học"><a href="index.html">Tiếng Anh</a><a href="chinese-vocabulary.html">Từ vựng HSK</a><a href="chinese-grammar.html">Ngữ pháp HSK</a><a href="chinese-radicals.html">Bộ thủ</a><a href="hsk-reference.html">Ngôn ngữ kỹ thuật</a><a href="technical.html">Ngôn ngữ kỹ thuật</a></nav><main id="learning-layout"><aside id="sidebar"><button id="change-settings" class="secondary" hidden>Đổi bộ / bài học</button><button id="study-stats" class="secondary stats-link" hidden>Thống kê học tập</button><div id="setup"><div class="eyebrow">GÓC LUYỆN TỪ VỰNG</div><h1>Từ quen hơn.<br>Nhớ lâu hơn.</h1><p class="intro">Anh · Trung · Việt / 14 chuyên ngành<br><button id="reload-data" type="button" class="secondary" hidden>Tải lại dữ liệu</button><span id="total">Đang tải dữ liệu…</span></p><form id="settings"><label for="activity">Cách học</label><select id="activity"><option value="learn" selected>Học từ — hiện nghĩa</option><option value="quiz">Trắc nghiệm — ôn bài</option></select><label for="term-language">Ngôn ngữ thuật ngữ</label><select id="term-language"><option value="en">Tiếng Anh</option><option value="zh">Tiếng Trung</option></select><label for="book">Cấp / nhóm</label><select id="book"><option value="0">Tất cả 14 chuyên ngành</option></select><div class="row"><div><label for="unit">Bài học (dùng chung học và ôn)</label><select id="unit"><option value="0">Tất cả bài</option></select></div></div><div id="quiz-settings"><label for="mode">Chiều luyện tập</label><select id="mode"><option value="en">Anh → Việt</option><option value="vi">Việt → Anh</option></select><label for="auto-next">Tự chuyển câu</label><select id="auto-next"><option value="0" selected>Tắt — tự bấm câu tiếp theo</option><option value="5">Sau 5 giây</option><option value="8">Sau 8 giây</option><option value="10">Sau 10 giây</option></select></div><button class="primary" id="start" disabled>Bắt đầu luyện tập →</button></form><div class="tip"><small>01 — NHỊP HỌC NHỎ</small><p>Chọn đáp án, xem ví dụ, rồi thử lại những từ bạn chưa nhớ.</p></div><p id="history"></p><button id="open-stats" class="secondary stats-link" disabled>Thống kê học tập</button></div><section id="study-panel" hidden aria-label="Nghĩa, ví dụ và chuyển câu"><p id="answer-hint"></p><div id="feedback" role="status" aria-live="polite"></div><div id="next-controls"><span id="countdown" role="timer"></span><button id="pause-auto" class="secondary" hidden>Dừng tự chuyển</button><button id="previous-word" class="secondary" hidden>← Từ trước</button><button id="next" class="primary" disabled>Chọn đáp án 0–3</button></div></section></aside><section class="workspace" aria-label="Bài trắc nghiệm"><div class="top"><span id="session-label">SẴN SÀNG LUYỆN TẬP</span><span class="pill" id="score">14 ngành · 270 bài</span></div><div class="progress"><div id="bar"></div></div><div id="welcome"><div class="word-mark">Aa<span>✦</span></div><h2>Một từ mới.<br>Một bước tiến.</h2><p>4.675 mục Anh–Trung–Việt trong 14 chuyên ngành.<br>Chọn ngôn ngữ thuật ngữ, chủ đề và bài để bắt đầu.</p><div class="sample"><b>voltage · 电压</b><span>diàn yā</span><span>điện áp</span></div></div><div id="quiz" hidden><p id="meta"></p><p id="prompt"></p><div class="heading"><h2 id="question"></h2><button id="audio" aria-label="Nghe phát âm">♪</button></div><p id="ipa"></p><p id="audio-status" role="status"></p><div id="learn-content" hidden><p id="learn-meaning"></p><p id="learn-example"></p></div><div class="image-controls"><button id="study-theme-toggle" type="button" class="secondary theme-toggle" aria-label="Ch&#7871; &#273;&#7897; t&#7889;i" aria-pressed="false">T&#7889;i: T&#7855;t</button><button id="toggle-auto-read" type="button" class="secondary auto-read-toggle" aria-pressed="false">Tự đọc: Tắt</button><button id="toggle-diagram" type="button" class="secondary" hidden>Xem sơ đồ / cách viết</button><button id="toggle-images" type="button" class="secondary image-toggle" aria-pressed="true" aria-controls="question-image">Ảnh: Bật</button></div><div id="question-image"></div><div id="options"></div><p class="keyboard" id="keyboard-help">Phím 0–3 để chọn · Enter để tiếp tục</p></div><div id="result" hidden><div class="eyebrow">HOÀN THÀNH LƯỢT HỌC</div><h2>Làm tốt lắm!</h2><div id="result-score"></div><p id="result-message"></p><div class="actions"><button id="next-lesson" type="button" class="primary" hidden>Bài tiếp theo →</button><button id="review-lesson" type="button" class="secondary" hidden>Ôn bài này</button><button id="retry" class="primary">Luyện lại câu sai</button><button id="again" class="secondary">Luyện lượt mới</button></div><button id="result-stats" class="secondary stats-link">Xem thống kê học tập</button><div id="review"></div></div></section></main><section id="stats-panel" hidden aria-labelledby="stats-title"><div class="stats-heading"><div><div class="eyebrow">LỊCH SỬ HỌC TẬP</div><h1 id="stats-title" tabindex="-1">Bạn đã luyện những bài nào?</h1></div><button id="close-stats" class="secondary">← Quay lại học</button></div><div class="stats-overview"><div><span>Bài đã luyện</span><strong id="stats-learned">0 / 270</strong></div><div><span>Phiên học / ôn hoàn tất</span><strong id="stats-sessions">0</strong></div></div><button id="stats-help-toggle" type="button" class="stats-help-toggle" aria-expanded="false" aria-controls="stats-help">Cách tính lượt học</button><div id="stats-help" hidden><p class="stats-rule">Học từ: xem hết các từ rồi bấm Hoàn tất để tính 1 lượt cho mỗi bài trong phiên. Trắc nghiệm: trả lời hết câu hỏi để tính 1 lượt cho mỗi bài có câu trong phiên. Luyện lại câu sai tính lượt mới; phiên bỏ dở không tính. “Đã luyện” không có nghĩa là đã học hết mọi từ của bài.</p></div><div class="stats-filter"><label for="stats-book">Xem bộ từ vựng</label><select id="stats-book"><option value="1">Bộ 1</option><option value="2">Bộ 2</option><option value="3">Bộ 3</option><option value="4">Bộ 4</option><option value="5">Bộ 5</option><option value="6">Bộ 6</option></select></div><h2 id="stats-book-summary">Bộ 1</h2><p id="stats-empty">Chưa có phiên học hoàn tất được ghi nhận. Hãy hoàn tất một lượt học từ hoặc trắc nghiệm để bắt đầu thống kê.</p><div class="stats-legend"><span class="level-0">Chưa học</span><span class="level-1">1 lượt</span><span class="level-2">2–4 lượt</span><span class="level-3">5+ lượt</span></div><ul id="stats-chart" aria-label="Số lượt học từng bài"></ul><div id="stats-pager" hidden><button id="stats-prev" type="button" class="secondary">← Trước</button><span id="stats-page-label"></span><button id="stats-next" type="button" class="secondary">Sau →</button></div><p id="stats-detail" role="status"></p><p class="stats-note stats-legacy-note">Bắt đầu ghi nhận từ bản cập nhật thống kê này. Các lượt học trước đây không có dữ liệu từng bài để khôi phục.</p><p id="stats-storage-note" class="stats-note" role="status"></p></section><footer><span>WORDCRAFT / TECHNICAL LANGUAGE</span><span>Nguồn: Technical Master EN–ZH–VI · Kết quả lưu trên thiết bị này</span></footer><p class="source-credit">Nội dung từ bộ Anki Technical Master EN–ZH–VI do bạn cung cấp. Mỗi bài tối đa 20 mục, chia theo chủ đề. Giọng đọc tùy hỗ trợ của thiết bị.</p></body></html>
+*{box-sizing:border-box}:root{font:16px "Segoe UI",Arial,sans-serif;color:#163c35;background:#f4f6f5}body{margin:0}button,select{font:inherit}button{cursor:pointer}button:disabled{cursor:default}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #87a82e;outline-offset:4px}[hidden]{display:none!important}header,main,footer{max-width:1250px;margin:auto}header{height:112px;display:flex;align-items:center;justify-content:space-between;padding:0 40px}header>span{font-size:14px;color:#667b73}.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit;font-size:15px;font-weight:800;letter-spacing:2px}.brand b{display:grid;place-items:center;background:#163f36;color:#e2fa93;width:42px;height:42px;border-radius:12px;font:29px Georgia;letter-spacing:-3px;padding-right:3px}main{display:grid;grid-template-columns:330px minmax(0,1fr);gap:64px;padding:24px 40px 55px}.eyebrow{font-size:12px;letter-spacing:2px;font-weight:700;color:#687e73}h1{font-size:43px;line-height:1.2;letter-spacing:-1.7px;font-weight:650;margin:22px 0}.intro{line-height:1.8;color:#60766b;margin-bottom:28px}#total{font-size:14px}label{display:block;font-size:14px;font-weight:600;margin:18px 0 9px}select{width:100%;padding:13px 10px;border:1px solid #cdd7d2;border-radius:9px;background:white;color:#24473f}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.primary{background:#163f36;color:white;border:0;border-radius:10px;padding:16px 20px;font-weight:600}.primary:hover{background:#24594b}.primary:disabled{opacity:.5}#start{margin-top:24px;width:100%}.tip{border-top:1px solid #d9e0dc;margin-top:32px;padding-top:22px}.tip small{font-size:12px;letter-spacing:1.5px;color:#64766a}.tip p,#history{font-size:14px;line-height:1.8;color:#61756a}.workspace{background:white;border:1px solid #dde4df;border-radius:22px;min-height:640px;padding:28px 34px;box-shadow:0 12px 40px #14382c05}.top{display:flex;gap:12px;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;letter-spacing:1px}.pill{background:#eff4ec;border-radius:20px;padding:9px 12px;font-size:12px;letter-spacing:0;white-space:nowrap}.progress{height:4px;background:#edf1ed;margin-top:22px;border-radius:4px;overflow:hidden}#bar{height:100%;width:0;background:#86a942;transition:width .2s}#welcome{text-align:center;padding:32px 0}.word-mark{display:inline-flex;position:relative;align-items:center;justify-content:center;border-radius:50%;width:120px;height:120px;background:#eaffb3;font:65px Georgia;color:#234838;margin:5px}.word-mark span{position:absolute;right:-10px;top:0;font-size:40px;color:#355b45}#welcome h2{font-size:36px;line-height:1.2;letter-spacing:-1px;margin:22px 0 16px}#welcome p{color:#63786b;line-height:1.8}.sample{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:28px;border-top:1px solid #edf0ed;padding-top:25px;font-size:14px}#meta{font-size:13px;color:#617567;margin-top:27px}#prompt{font-size:15px;color:#627567;margin:22px 0 12px}.heading{display:flex;align-items:center;gap:16px}.heading h2{font-size:38px;letter-spacing:-.8px;overflow-wrap:anywhere;margin:0;line-height:1.3}#audio{border:1px solid #dce6d7;border-radius:50%;background:#f3f8eb;color:#244e3e;width:44px;height:44px;flex-shrink:0;font-size:24px}#ipa{color:#65796b;min-height:20px}#options{display:grid;gap:11px;margin:24px 0}.option{display:flex;text-align:left;align-items:center;gap:15px;width:100%;background:white;border:1px solid #dce3de;border-radius:11px;padding:15px;color:#294b40;line-height:1.5}.option:not(:disabled):hover{background:#f1f7e8;border-color:#8aaa59}.key{font-size:13px;border:1px solid #dae3dc;min-width:27px;height:27px;display:grid;place-items:center;border-radius:6px}.correct{background:#eaf6dc!important;border-color:#81ad4f!important}.wrong{background:#fff0ed!important;border-color:#d78274!important}.option:disabled{opacity:1}#feedback{line-height:1.65;font-size:15px;overflow-wrap:anywhere}#feedback p{margin:8px 0 16px;color:#607467}#next{margin-top:8px}.keyboard{font-size:12px;color:#65766a;margin-top:22px}#result{padding-top:36px}#result h2{font-size:36px;margin-bottom:12px}#result-score{font-size:64px;font-weight:700;letter-spacing:-3px;color:#426627}#result-message{line-height:1.6;color:#637465}.actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}.secondary{border:1px solid #c9d6ca;border-radius:10px;padding:14px;background:white;color:#214632}.review-item{padding:14px 0;border-top:1px solid #e4e9e3;line-height:1.6}.review-item span{display:block;color:#66796b;font-size:14px}footer{padding:12px 40px 30px;display:flex;justify-content:space-between;gap:20px;color:#66786b;font-size:12px;line-height:1.7}@media(max-width:900px){main{gap:28px;grid-template-columns:260px minmax(0,1fr);padding:18px 24px 35px}header{padding:0 24px}.workspace{padding:24px}h1{font-size:36px}.heading h2{font-size:30px}}@media(max-width:680px){header{height:85px}header>span{display:none}main{display:block;padding:8px 20px 30px}h1{font-size:34px;margin:12px 0}h1 br{display:none}.intro{margin:14px 0}.tip{display:none}#start{margin:18px 0 24px}.workspace{min-height:500px;padding:22px 18px;border-radius:16px}.top{font-size:11px;letter-spacing:.3px}#welcome h2,.heading h2{font-size:30px}footer{padding:0 20px 25px;flex-direction:column;gap:5px}.keyboard{display:none}}
+.illustration{margin:6px 0 10px;padding:6px;background:#f5f8f3;border:1px solid #e0e7dc;border-radius:12px}.illustration img{display:block;max-width:100%;width:auto;height:auto;max-height:100px;object-fit:contain;margin:auto;border-radius:6px}.illustration figcaption{display:none}
+
+#quiz #meta{margin:12px 0 8px}#quiz #prompt{margin:8px 0}#quiz #ipa{margin:6px 0}#quiz #options{gap:8px;margin:10px 0}#quiz .option{padding:10px 14px;min-height:48px}@media(max-width:680px){.illustration img{max-height:84px}}
+
+#quiz{scroll-margin-top:8px}.illustration img{width:100%;height:120px;max-height:none;object-fit:contain}@media(max-width:680px){.illustration img{max-height:none}}
+
+/* Older Safari: use flex/block and explicit margins instead of grid and flex-gap. */
+main{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:0}
+#sidebar{-webkit-flex:0 0 330px;flex:0 0 330px;margin-right:64px;min-width:0}
+.workspace{-webkit-flex:1 1 0%;flex:1 1 0%;min-width:0}
+.row{display:-webkit-flex;display:flex;gap:0}.row>div{width:50%}.row>div+div{margin-left:12px}
+#options{display:block}#options .option+.option{margin-top:8px}
+.option{display:-webkit-flex;display:flex;gap:0}.option .key{margin-right:15px;flex-shrink:0}
+.heading{gap:0}#audio{margin-left:16px}.heading h2{min-width:0;word-wrap:break-word}
+#change-settings{width:100%;margin-bottom:16px}
+.studying #sidebar{position:-webkit-sticky;position:sticky;top:12px}
+#study-panel{padding:20px;background:white;border:1px solid #dce3de;border-radius:14px}
+#answer-hint{font-size:14px;color:#607467;margin:0 0 14px}
+#study-panel #feedback{max-height:calc(100vh - 270px);overflow:auto;-webkit-overflow-scrolling:touch}
+#study-panel #next{width:100%;margin-top:10px}
+#next-controls{padding-top:6px}#countdown{display:block;font-size:14px;color:#607467}
+#pause-auto{font-size:14px;padding:8px 12px;margin:8px 0 2px}
+#study-panel .answer-meaning{font-weight:600;color:#24473f}
+#audio-status:empty{display:none}#audio-status{font-size:14px;color:#93432e}
+@media(max-width:900px) and (min-width:681px){#sidebar{-webkit-flex-basis:260px;flex-basis:260px;margin-right:28px}}
+@media(max-width:680px){
+ main{display:block}#sidebar{margin-right:0;width:auto}
+ .studying #sidebar{position:static}
+ .studying{padding-bottom:100px}.studying footer{display:none}
+ .studying #study-panel{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px 12px 12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-radius:14px 14px 0 0;box-shadow:0 -3px 20px rgba(20,50,35,.12)}
+ #study-panel #answer-hint{display:none}
+ #study-panel #feedback{max-height:32vh;margin:0 0 6px;overflow:auto}
+ #study-panel #feedback:empty{display:none}
+ #next-controls{padding:0;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-items:center;align-items:center}
+ #study-panel #next{margin:0;-webkit-flex:1 1 180px;flex:1 1 180px;width:auto;min-height:48px}
+ #countdown:not(:empty){width:100%;margin-bottom:6px}
+ #pause-auto{margin:0 8px 0 0;min-height:44px}
+ .studying .workspace{padding-top:16px}
+}
+
+@media(max-width:680px) and (max-height:560px){
+ #quiz #meta{margin:2px 0;font-size:12px}
+ #quiz #prompt{margin:4px 0;font-size:14px}
+ #quiz .heading h2{font-size:26px}
+ #quiz #ipa{margin:3px 0;min-height:16px;font-size:14px}
+ #quiz .option{min-height:44px;padding:8px 10px;font-size:14px}
+}
+
+@media(max-width:680px){.studying:not(.answered) #study-panel{display:none}}
+
+/* Lightweight lesson chart: plain text and CSS bars, including older Safari. */
+.stats-link{width:100%;margin:12px 0}
+#study-stats{margin:0 0 16px}
+#stats-panel{max-width:1060px;margin:0 auto 40px;padding:24px 40px;background:white;border:1px solid #dde4df;border-radius:20px}
+.stats-heading{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between}
+.stats-heading>div{min-width:0;margin-right:20px}
+#stats-title{font-size:32px;line-height:1.25;letter-spacing:-.8px;margin:12px 0 22px}
+#close-stats{white-space:nowrap}
+.stats-overview{display:-webkit-flex;display:flex;margin:8px 0 20px}
+.stats-overview>div{-webkit-flex:1;flex:1;border:1px solid #dce6d7;background:#f3f8eb;border-radius:12px;padding:18px}
+.stats-overview>div+div{margin-left:14px}
+.stats-overview span{display:block;font-size:14px;color:#607467}
+.stats-overview strong{display:block;font-size:30px;margin-top:6px}
+.stats-rule,.stats-note,#stats-empty{font-size:14px;line-height:1.7;color:#607467}
+.stats-rule{max-width:800px}
+.stats-filter{max-width:280px;margin:22px 0}
+#stats-book-summary{font-size:21px;margin:26px 0 20px}
+#stats-chart{list-style:none;margin:0;padding:0}
+.stats-row{margin:0 0 18px}
+.stats-row-label{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;line-height:1.5;font-size:14px;margin-bottom:5px}
+.stats-row-label strong{font-weight:600;margin-left:14px;text-align:right}
+.stats-track{background:#edf1ed;height:12px;border-radius:6px;overflow:hidden}
+.stats-bar{display:block;height:100%;background:#426e45;border-radius:6px}
+.stats-unseen .stats-row-label{color:#697c71}
+.stats-note{border-top:1px solid #edf1ed;padding-top:14px;margin-top:20px}
+@media(max-width:680px){
+ #stats-panel{margin:0 12px 24px;padding:20px 16px;border-radius:14px}
+ .stats-heading{display:block}.stats-heading>div{margin:0}
+ #stats-title{font-size:27px}#close-stats{width:100%;margin-bottom:18px}
+ .stats-overview>div{padding:12px}.stats-overview>div+div{margin-left:8px}
+ .stats-overview strong{font-size:24px}
+ .stats-filter{max-width:none}
+}
+
+.image-controls{text-align:right;margin:4px 0}.image-toggle{font-size:14px;padding:8px 12px;min-height:40px}.image-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}
+
+#learn-meaning{font-size:23px;font-weight:600;line-height:1.5;margin:12px 0}
+#learn-example{font-size:16px;line-height:1.7;color:#607467;margin:12px 0}
+#previous-word{min-height:44px;margin:8px 0}
+.learning-words .illustration img{max-height:520px}
+@media(max-width:680px){
+ .studying.learning-words:not(.answered) #study-panel{display:block}
+ .learning-words #study-panel #feedback,.learning-words #answer-hint{display:none}
+ .learning-words #previous-word{margin:0 8px 0 0;flex:0 0 auto}
+ .learning-words #study-panel #next{flex:1 1 100px}
+ .learning-words #quiz{padding-bottom:100px}
+ #learn-meaning{font-size:21px}.learning-words .illustration img{max-height:120px}
+}
+
+@media(min-width:390px) and (max-width:680px){.learning-words .illustration img{max-height:260px}}
+
+.subjects{max-width:1250px;margin:0 auto;padding:0 40px 14px;display:flex;flex-wrap:wrap}.subjects a{display:block;color:#214632;background:#fff;border:1px solid #c9d6ca;border-radius:9px;padding:10px 14px;margin:0 8px 8px 0;text-decoration:none;font-size:14px}.subjects a:hover{background:#edf5e5}#learn-example{white-space:pre-line}.chinese .heading h2{line-height:1.5;letter-spacing:0;word-break:break-word}.chinese #meta{line-height:1.6}.chinese .stats-row-label>span{line-height:1.5}.chinese #toggle-diagram{margin:8px 0}@media(max-width:680px){.subjects{padding:0 20px 6px}.subjects a{padding:9px 10px}.studying .subjects{display:none}}
+
+.collection-grammar #toggle-images,.collection-grammar #question-image,.collection-grammar #toggle-diagram{display:none!important}
+@media(max-width:680px){.collection-vocabulary.learning-words .illustration img{max-height:360px}}
+.collection-radicals #quiz{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column}
+.collection-radicals.learning-words #question-image{-webkit-order:2;order:2}
+.collection-radicals #keyboard-help{-webkit-order:3;order:3}
+.collection-radicals .illustration img{max-height:none;object-position:center bottom}
+
+.auto-read-toggle{font-size:14px;padding:8px 12px;min-height:40px;margin:6px 0}.auto-read-toggle[aria-pressed="true"]{background:#edf5e5;border-color:#88a56d}
+
+.learning-words #prompt{display:none}
+.image-controls{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-items:center;align-items:center;text-align:left;margin:4px 0}
+.image-controls .secondary,.chinese .image-controls #toggle-diagram{width:auto;min-height:32px;padding:5px 9px;font-size:13px;margin:0 6px 4px 0;border-radius:7px}
+.learning-words #learn-meaning{margin:6px 0;font-size:21px}
+.learning-words #learn-example{margin:6px 0;line-height:1.5}
+.learning-words #quiz .illustration img{max-height:none;object-position:center bottom}
+.studying #change-settings,.studying #study-stats{padding:8px 12px;min-height:36px;font-size:14px;margin-bottom:8px}
+.learning-words #study-panel{padding:12px}
+.learning-words #answer-hint{font-size:13px;margin-bottom:8px}
+.learning-words #previous-word,.learning-words #study-panel #next{min-height:36px;padding:8px 12px;font-size:14px;margin-top:4px}
+@media(max-width:680px){.image-controls .secondary,.chinese .image-controls #toggle-diagram{min-height:36px}.learning-words #study-panel{padding:6px 12px 10px}.learning-words #previous-word,.learning-words #study-panel #next{min-height:40px}}
+
+#stats-chart{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -4px}
+.stats-tile{width:10%;padding:4px;min-width:0}
+.stats-cell{display:block;width:100%;min-height:68px;border:1px solid #d9e3d9;border-radius:10px;padding:9px 3px;color:#294b40;text-align:center}
+.stats-cell span{display:block;font-size:12px}.stats-cell strong{display:block;font-size:14px;margin-top:6px}
+.level-0{background:#f1f4f1;color:#697c71}.level-1{background:#e8f2d8;color:#35572e}.level-2{background:#b9d78c;color:#274923}.level-3{background:#356344;color:white}
+.stats-cell[aria-pressed="true"]{outline:2px solid #163f36;outline-offset:1px}
+.stats-legend{display:flex;flex-wrap:wrap;margin:0 0 10px}.stats-legend span{font-size:12px;border-radius:5px;padding:5px 9px;margin:0 6px 4px 0}
+#stats-pager{display:flex;align-items:center;justify-content:space-between;margin:12px 0;font-size:13px}#stats-pager button{padding:7px 12px;min-height:36px}
+#stats-detail{min-height:44px;background:#f4f7f2;border-radius:9px;padding:12px;font-size:14px;line-height:1.5;color:#385c47}
+.stats-help-toggle{background:none;border:0;padding:0;color:#476749;text-decoration:underline;font-size:13px}
+.stats-legacy-note{display:none}.stats-filter{margin:14px 0}#stats-book-summary{margin:16px 0 12px;font-size:18px}
+@media(max-width:680px){.stats-tile{width:20%;padding:3px}.stats-cell{min-height:61px;border-radius:8px}.stats-cell span{font-size:11px}.stats-cell strong{font-size:12px}.stats-overview{margin-bottom:12px}}
+
+header .theme-toggle{padding:7px 10px;font-size:13px;min-height:36px;margin-left:12px;white-space:nowrap}header>span{margin-left:auto}
+html.dark{color-scheme:dark;background:#080808;color:#e8e8e8}
+.dark body{background:#080808;color:#e8e8e8}
+.dark .workspace,.dark #study-panel,.dark #stats-panel{background:#141414;border-color:#303030;box-shadow:none}
+.dark .secondary,.dark select,.dark .option,.dark .subjects a{background:#202020;color:#e8e8e8;border-color:#424242}
+.dark .option:not(:disabled):hover,.dark .subjects a:hover{background:#2b2b2b;border-color:#92b67b}
+.dark .primary{background:#a7c88c;color:#172617}.dark .primary:hover{background:#bbdaa3}
+.dark .intro,.dark #total,.dark #meta,.dark #prompt,.dark #ipa,.dark #learn-example,.dark #feedback p,.dark #answer-hint,.dark #countdown,.dark #audio-status,.dark .keyboard,.dark .eyebrow,.dark .tip,.dark .tip p,.dark .tip small,.dark #history,.dark footer,.dark header>span,.dark #welcome p,.dark #result-message,.dark .review-item span,.dark .stats-rule,.dark .stats-note,.dark #stats-empty,.dark .stats-overview span{color:#bdbdbd}
+.dark #study-panel .answer-meaning{color:#e8e8e8}
+.dark .illustration,.dark .stats-overview>div,.dark .pill,.dark #stats-detail{background:#202020;color:#e0e0e0;border-color:#383838}
+.dark #audio,.dark .image-toggle[aria-pressed="true"],.dark .auto-read-toggle[aria-pressed="true"]{background:#344c2f;color:#e2f1d7;border-color:#86a771}
+.dark .key,.dark .tip,.dark .review-item,.dark .sample,.dark .stats-note{border-color:#3b3b3b}
+.dark .correct{background:#304e2d!important;border-color:#9bc77d!important;color:#ecf7e5!important}
+.dark .wrong{background:#59332f!important;border-color:#de9488!important;color:#ffe5df!important}
+.dark .progress,.dark .stats-track{background:#303030}.dark #bar,.dark .stats-bar{background:#a7c88c}
+.dark #result-score,.dark .stats-help-toggle{color:#b9d99c}
+.dark .stats-cell{border-color:#424242;color:#e8e8e8}
+.dark .level-0{background:#242424;color:#c4c4c4}.dark .level-1{background:#3b4e32;color:#e0eccc}.dark .level-2{background:#627e48;color:#f5ffe6}.dark .level-3{background:#a7c88c;color:#172617}
+.dark .stats-cell[aria-pressed="true"]{outline-color:#c8e6ac}
+.dark button:focus-visible,.dark a:focus-visible,.dark select:focus-visible{outline-color:#c8e6ac}
+
+.collection-reference #toggle-images,.collection-reference #question-image{display:none!important}.source-credit{max-width:1170px;margin:0 auto;padding:0 24px 24px;color:#607467;font-size:13px;line-height:1.7}.source-credit a{color:inherit;text-decoration:underline}.dark .source-credit{color:#bdbdbd}
+
+#settings .row>div{width:100%}
+
+/* Keyboard hints remain visible when dynamic button labels change. */
+@media (hover:hover) and (pointer:fine){
+ button[data-shortcut]::after{content:attr(data-shortcut);display:inline-block;margin-left:7px;padding:1px 5px;border:1px solid currentColor;border-radius:4px;font-size:11px;font-weight:400;line-height:1.4;opacity:.75}
+ #audio{width:auto;min-width:40px;padding:6px}
+}
+button:focus,select:focus,a:focus{outline:3px solid #8baa26;outline-offset:3px}
+#shortcut-help{position:fixed;z-index:100;top:12px;right:12px;width:540px;max-width:calc(100% - 24px);max-height:calc(100vh - 24px);overflow:auto;padding:20px;box-sizing:border-box;background:#fff;color:#173e36;border:2px solid #8baa26;border-radius:12px;box-shadow:0 8px 40px #0005}
+#shortcut-help p{font-size:15px;line-height:1.5;margin:10px 0}
+html.dark #shortcut-help{background:#141414;color:#eee}
+#shortcut-help-toggle{padding:6px 10px;font-size:13px}
+
+#shortcut-help-close{float:right;padding:5px 10px}
+
+/* Leave room for keyboard focus rings, including browsers without flex gap. */
+header{height:auto;min-height:112px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+header>.brand{flex:0 0 auto;margin:8px 16px 8px 0}
+header>span{flex:1 1 220px;text-align:right;margin:8px 0}
+header>button{flex:0 0 auto;margin-top:8px;margin-bottom:8px}
+header .theme-toggle,header #shortcut-help-toggle{margin-left:16px;min-height:36px;white-space:nowrap}
+@media(max-width:680px){header{min-height:85px}header>.brand{margin-right:auto}}
+
+/* Hide keyboard help on phone-sized and touch-first screens. */
+@media (max-width:680px), (hover:none), (pointer:coarse){
+ #shortcut-help-toggle{display:none}
+}
+
+.write-label{font-weight:600;margin:12px 0 6px}
+.write-input{display:block;width:100%;min-height:50px;padding:12px 14px;border:1px solid #cdd7d2;border-radius:9px;background:#fff;color:#173e36;font:inherit;font-size:18px}
+.write-input:focus{outline:3px solid #8baa26;outline-offset:2px}
+.write-input:disabled{background:#edf5e5}
+.write-check{margin-top:16px}
+.dark .write-input{background:#202020;color:#eee;border-color:#424242}
+.dark .write-input:disabled{background:#263224}
