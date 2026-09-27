@@ -164,6 +164,7 @@ if(window.visualViewport)window.visualViewport.addEventListener('resize',schedul
 function render(){
  showDiagram=false;
  if(activity==='learn'){renderLearning();return;}
+ if(activity==='write'){renderWriting();return;}
  document.body.classList.remove('learning-words');
  $('toggle-diagram').hidden=true;$('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
  text('keyboard-help','Ph\u00edm 0\u20133 \u0111\u1ec3 ch\u1ecdn \u00b7 Enter \u0111\u1ec3 ti\u1ebfp t\u1ee5c');
@@ -185,6 +186,62 @@ function render(){
  });
  requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});maybeAutoRead();
 }
+function renderWriting(){
+ stopTimer();stopAudio();locked=false;choices=[];
+ document.body.classList.remove('learning-words');document.body.classList.remove('answered');
+ $('toggle-diagram').hidden=true;$('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
+ text('keyboard-help','Gõ từ tiếng Anh và tiếng Trung · Enter để kiểm tra · Tab để chuyển ô');
+ var w=queue[index];text('session-label','LUYỆN GÕ '+(index+1)+' / '+queue.length);
+ text('score',answers.length+' / '+queue.length+' mục hoàn tất');
+ $('bar').style.width=(index/queue.length*100)+'%';text('meta',wordMeta(w));
+ text('prompt','Gõ lại thuật ngữ bằng cả tiếng Anh và tiếng Trung');
+ text('question',w.meaning);text('ipa',w.pinyin||'');$('audio').hidden=!hasCardAudio(w);$('audio-status').textContent='';
+ $('options').hidden=false;empty($('options'));empty($('feedback'));empty($('question-image'));
+ text('answer-hint','Nhập cả hai thuật ngữ rồi nhấn Enter hoặc nút Kiểm tra.');
+ $('next').disabled=true;text('next','Kiểm tra');$('toggle-diagram').hidden=true;
+ var enLabel=document.createElement('label');enLabel.className='write-label';enLabel.setAttribute('for','write-english');enLabel.textContent='Tiếng Anh';
+ var enInput=document.createElement('input');enInput.id='write-english';enInput.type='text';enInput.autocomplete='off';enInput.spellcheck=false;enInput.setAttribute('aria-label','Gõ từ tiếng Anh');enInput.setAttribute('lang','en');enInput.className='write-input';
+ var zhLabel=document.createElement('label');zhLabel.className='write-label';zhLabel.setAttribute('for','write-chinese');zhLabel.textContent='中文 · Tiếng Trung';
+ var zhInput=document.createElement('input');zhInput.id='write-chinese';zhInput.type='text';zhInput.autocomplete='off';zhInput.spellcheck=false;zhInput.setAttribute('aria-label','Gõ từ tiếng Trung');zhInput.setAttribute('lang','zh-Hans');zhInput.className='write-input';
+ var check=document.createElement('button');check.type='button';check.className='primary write-check';check.textContent='Kiểm tra';check.onclick=checkWritingAnswers;
+ add($('options'),enLabel,enInput,zhLabel,zhInput,check);
+ enInput.onkeydown=writingInputKey;zhInput.onkeydown=writingInputKey;
+ requestAnimationFrame(function(){enInput.focus();});
+ $('audio').hidden=!hasCardAudio(w);text('audio-status','');
+ if(autoRead)maybeAutoRead();
+}
+function writingInputKey(e){
+ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&locked){e.preventDefault();advance();}
+ else if(e.key==='Enter'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();if(!locked)checkWritingAnswers();else advance();}
+}
+function normalizeWriting(value,language){
+ value=(value||'').toLowerCase().trim();
+ return value.replace(/\s/g,'').replace(/[.,!?;:()\-]/g,'').replace(/[\uFF0C\u3002\uFF01\uFF1F\uFF1B\uFF1A\u3001\u201C\u201D\u2018\u2019\uFF08\uFF09\u3010\u3011\u300A\u300B\u2026\u2014]/g,'');
+ return value.replace(/[\\s.,!?;:'""()[\\]{}，。！？；：、“”‘’（）【】《》…—-]/g,'');
+}
+function checkWritingAnswers(){
+ if(activity!=='write'||locked)return;
+ var w=queue[index],en=$('write-english'),zh=$('write-chinese');
+ var englishCorrect=normalizeWriting(en.value,'en')===normalizeWriting(w.english,'en');
+ var chineseCorrect=normalizeWriting(zh.value,'zh')===normalizeWriting(w.chinese,'zh');
+ empty($('feedback'));
+ var status=document.createElement('strong');
+ status.textContent=englishCorrect&&chineseCorrect?'Chính xác!':'Kiểm tra lại phần chưa đúng:';
+ add($('feedback'),status);
+ var enResult=document.createElement('p');enResult.textContent=(englishCorrect?'✓ ':'✗ ')+'Tiếng Anh: '+w.english;
+ var zhResult=document.createElement('p');zhResult.textContent=(chineseCorrect?'✓ ':'✗ ')+'Tiếng Trung: '+w.chinese;
+ add($('feedback'),enResult,zhResult);
+ if(!englishCorrect||!chineseCorrect){
+  text('answer-hint','Sửa ô có dấu ✗ rồi nhấn Enter để kiểm tra lại.');
+  (englishCorrect?zh:en).focus();return;
+ }
+ locked=true;document.body.classList.add('answered');
+ en.disabled=true;zh.disabled=true;answers.push({word:w,correct:true,selected:w});
+ text('score',answers.length+' / '+queue.length+' mục hoàn tất');
+ text('answer-hint','Cả hai từ đều đúng. Nhấn Enter hoặc Tiếp theo để tiếp tục.');
+ $('next').disabled=false;text('next',index===queue.length-1?'Hoàn tất':'Từ tiếp theo →');
+ recordCompletedQuiz();
+}
 function choose(i){
  if(activity==='learn')return;
  if(locked||!choices[i])return;locked=true;document.body.classList.add('answered');
@@ -202,7 +259,7 @@ function choose(i){
  if(config.kind==='radicals')schedulePictureFit();
  startTimer();
 }
-function advance(){if(activity==='learn'){if(index<queue.length-1){index++;render();}else finishLearning();return;}if(!locked)return;stopTimer();index++;if(index<queue.length)render();else finish();}
+function advance(){if(activity==='write'&&!locked)return;if(activity==='learn'){if(index<queue.length-1){index++;render();}else finishLearning();return;}if(!locked)return;stopTimer();index++;if(index<queue.length)render();else finish();}
 function finish(){
  recordCompletedQuiz();$('study-stats').hidden=true;
  stopTimer();stopAudio();document.body.classList.remove('studying');document.body.classList.remove('answered');
@@ -480,8 +537,8 @@ $('stats-help-toggle').onclick=function(){var show=$('stats-help').hidden;$('sta
 var activity='quiz',learnSeen={};
 function updateActivitySetup(){
  if(learnOnlyBook())$('activity').value='learn';
- var learning=$('activity').value==='learn';
- $('quiz-settings').hidden=learning;
+ var learning=$('activity').value==='learn',writing=$('activity').value==='write';
+ $('quiz-settings').hidden=learning||writing;
  text('start',learning?'Bắt đầu học từ →':'Bắt đầu trắc nghiệm →');
 }
 $('activity').onchange=updateActivitySetup;
