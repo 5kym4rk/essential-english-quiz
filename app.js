@@ -237,7 +237,7 @@ function checkWritingAnswers(){
  var status=document.createElement('strong');add($('feedback'),status);
  targets.forEach(function(target){
   var input=$(target.id),correct=normalizeWriting(input.value,target.language)===normalizeWriting(target.value,target.language);
-  var result=document.createElement('p');result.textContent=correct?'\u2713 '+target.label+': '+target.value:'\u2717 '+target.label+': ch\u01b0a ch\u00fang, th\u1eed l\u1ea1i';add($('feedback'),result);
+  var result=document.createElement('p');result.textContent=correct?'\u2713 '+target.label+': '+target.value:'\u2717 '+target.label+': ch\u01b0a \u0111\u00fang, th\u1eed l\u1ea1i';add($('feedback'),result);
   if(!correct){allCorrect=false;if(!firstIncorrect)firstIncorrect=input;}
  });
  status.textContent=allCorrect?'\u0110\u00fang!':'H\u00e3y s\u1eeda ph\u1ea7n c\u00f3 d\u1ea5u \u2717:';
