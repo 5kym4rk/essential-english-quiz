@@ -144,6 +144,18 @@ function mobile(){return window.matchMedia('(max-width:680px)').matches;}
 function fitQuestionPicture(){
  var quiz=$('quiz'),image=$('question-image').querySelector('img'),last=$('options').lastElementChild;
  if(quiz.hidden||!image)return;
+ if(activity==='write'&&!locked){
+  var check=$('options').querySelector('.write-check');
+  if(!check)return;
+  var visual=window.visualViewport,viewportBottom=visual?visual.offsetTop+visual.height:window.innerHeight;
+  var targetBottom=viewportBottom-18,buttonBottom=check.getBoundingClientRect().bottom;
+  var currentHeight=image.getBoundingClientRect().height,delta=targetBottom-buttonBottom;
+  if(Math.abs(delta)>1){
+   var naturalHeight=image.naturalHeight||currentHeight;
+   image.style.height=Math.max(40,Math.min(naturalHeight,Math.floor(currentHeight+delta)))+'px';
+  }
+  return;
+ }
  if(activity==='learn'){
   var panelReserve=mobile()?$('study-panel').getBoundingClientRect().height+12:0;
   var imageOffset=image.getBoundingClientRect().top-quiz.getBoundingClientRect().top;
@@ -160,7 +172,8 @@ function fitQuestionPicture(){
 function alignQuestion(){var top=$('quiz').getBoundingClientRect().top+(window.pageYOffset||0)-8;window.scrollTo(0,Math.max(0,top));}
 function schedulePictureFit(){if(pictureFrame)cancelAnimationFrame(pictureFrame);pictureFrame=requestAnimationFrame(fitQuestionPicture);}
 window.addEventListener('resize',schedulePictureFit);
-if(window.visualViewport)window.visualViewport.addEventListener('resize',schedulePictureFit);
+window.addEventListener('scroll',schedulePictureFit,{passive:true});
+if(window.visualViewport){window.visualViewport.addEventListener('resize',schedulePictureFit);window.visualViewport.addEventListener('scroll',schedulePictureFit);}
 function render(){
  showDiagram=false;
  if(activity==='learn'){renderLearning();return;}
@@ -219,7 +232,7 @@ function renderWriting(){
  });
  var check=document.createElement('button');check.type='button';check.className='primary write-check';check.textContent='Ki\u1ec3m tra';check.onclick=checkWritingAnswers;add($('options'),check);
  renderQuestionImage();
- requestAnimationFrame(function(){alignQuestion();fitQuestionPicture();var first=targets[0];if(first)$(first.id).focus();});
+ requestAnimationFrame(function(){alignQuestion();requestAnimationFrame(function(){fitQuestionPicture();requestAnimationFrame(fitQuestionPicture);var first=targets[0];if(first)$(first.id).focus();});});
  if(autoRead)maybeAutoRead();
 }
 function writingInputKey(e){
