@@ -218,7 +218,8 @@ function renderWriting(){
   input.onkeydown=writingInputKey;add($('options'),label,input);
  });
  var check=document.createElement('button');check.type='button';check.className='primary write-check';check.textContent='Ki\u1ec3m tra';check.onclick=checkWritingAnswers;add($('options'),check);
- requestAnimationFrame(function(){var first=targets[0];if(first)$(first.id).focus();});
+ renderQuestionImage();
+ requestAnimationFrame(function(){alignQuestion();fitQuestionPicture();var first=targets[0];if(first)$(first.id).focus();});
  if(autoRead)maybeAutoRead();
 }
 function writingInputKey(e){
