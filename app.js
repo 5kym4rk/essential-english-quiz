@@ -24,7 +24,7 @@ function updateAutoReadButton(){
  text('toggle-auto-read',autoRead?'Tự đọc: Bật':'Tự đọc: Tắt');
  $('toggle-auto-read').setAttribute('aria-pressed',autoRead?'true':'false');
 }
-function canReadCard(){return !$('quiz').hidden&&(activity==='learn'||mode==='en'||locked);}
+function canReadCard(){if(activity==='write')return locked;return !$('quiz').hidden&&(activity==='learn'||mode==='en'||locked);}
 function maybeAutoRead(){if(autoRead&&!document.hidden&&canReadCard())playCardAudio(true);}
 $('toggle-auto-read').onclick=function(){
  autoRead=!autoRead;try{localStorage.setItem('wordcraft-auto-read',autoRead?'on':'off');}catch(e){}
@@ -186,28 +186,39 @@ function render(){
  });
  requestAnimationFrame(function(){fitQuestionPicture();alignQuestion();});maybeAutoRead();
 }
+function writingTargets(w){
+ if(config.kind==='technical')return[
+  {id:'write-english',label:'English',value:w.english,language:'en'},
+  {id:'write-chinese',label:'\u4e2d\u6587 \u00b7 Ti\u1ebfng Trung',value:w.chinese,language:'zh'}
+ ];
+ if(config.kind==='vocabulary')return[
+  {id:'write-chinese',label:'\u4e2d\u6587 \u00b7 Ti\u1ebfng Trung',value:w.word,language:'zh'}
+ ];
+ return[{id:'write-english',label:'Ti\u1ebfng Anh',value:w.word,language:'en'}];
+}
 function renderWriting(){
  stopTimer();stopAudio();locked=false;choices=[];
  document.body.classList.remove('learning-words');document.body.classList.remove('answered');
  $('toggle-diagram').hidden=true;$('learn-content').hidden=true;$('options').hidden=false;$('previous-word').hidden=true;
- text('keyboard-help','Gõ từ tiếng Anh và tiếng Trung · Enter để kiểm tra · Tab để chuyển ô');
- var w=queue[index];text('session-label','LUYỆN GÕ '+(index+1)+' / '+queue.length);
- text('score',answers.length+' / '+queue.length+' mục hoàn tất');
+ text('keyboard-help','G\u00f5 l\u1ea1i thu\u1eadt ng\u1eef \u00b7 Enter \u0111\u1ec3 ki\u1ec3m tra / ti\u1ebfp t\u1ee5c \u00b7 Tab \u0111\u1ec3 chuy\u1ec3n \u00f4');
+ var w=queue[index],targets=writingTargets(w);
+ text('session-label','LUY\u1ec6N G\u00d5 '+(index+1)+' / '+queue.length);
+ text('score',answers.length+' / '+queue.length+' m\u1ee5c ho\u00e0n t\u1ea5t');
  $('bar').style.width=(index/queue.length*100)+'%';text('meta',wordMeta(w));
- text('prompt','Gõ lại thuật ngữ bằng cả tiếng Anh và tiếng Trung');
- text('question',w.meaning);text('ipa',w.pinyin||'');$('audio').hidden=!hasCardAudio(w);$('audio-status').textContent='';
+ text('prompt','G\u00f5 l\u1ea1i thu\u1eadt ng\u1eef theo ngh\u0129a ti\u1ebfng Vi\u1ec7t');
+ text('question',w.meaning);text('ipa','');
+ $('audio').hidden=true;$('audio-status').textContent='';
  $('options').hidden=false;empty($('options'));empty($('feedback'));empty($('question-image'));
- text('answer-hint','Nhập cả hai thuật ngữ rồi nhấn Enter hoặc nút Kiểm tra.');
- $('next').disabled=true;text('next','Kiểm tra');$('toggle-diagram').hidden=true;
- var enLabel=document.createElement('label');enLabel.className='write-label';enLabel.setAttribute('for','write-english');enLabel.textContent='Tiếng Anh';
- var enInput=document.createElement('input');enInput.id='write-english';enInput.type='text';enInput.autocomplete='off';enInput.spellcheck=false;enInput.setAttribute('aria-label','Gõ từ tiếng Anh');enInput.setAttribute('lang','en');enInput.className='write-input';
- var zhLabel=document.createElement('label');zhLabel.className='write-label';zhLabel.setAttribute('for','write-chinese');zhLabel.textContent='中文 · Tiếng Trung';
- var zhInput=document.createElement('input');zhInput.id='write-chinese';zhInput.type='text';zhInput.autocomplete='off';zhInput.spellcheck=false;zhInput.setAttribute('aria-label','Gõ từ tiếng Trung');zhInput.setAttribute('lang','zh-Hans');zhInput.className='write-input';
- var check=document.createElement('button');check.type='button';check.className='primary write-check';check.textContent='Kiểm tra';check.onclick=checkWritingAnswers;
- add($('options'),enLabel,enInput,zhLabel,zhInput,check);
- enInput.onkeydown=writingInputKey;zhInput.onkeydown=writingInputKey;
- requestAnimationFrame(function(){enInput.focus();});
- $('audio').hidden=!hasCardAudio(w);text('audio-status','');
+ text('answer-hint','Nh\u1eadp thu\u1eadt ng\u1eef r\u1ed3i nh\u1ea5n Enter ho\u1eb7c n\u00fat Ki\u1ec3m tra.');
+ $('next').disabled=true;text('next','Ki\u1ec3m tra');
+ targets.forEach(function(target){
+  var label=document.createElement('label');label.className='write-label';label.setAttribute('for',target.id);label.textContent=target.label;
+  var input=document.createElement('input');input.id=target.id;input.type='text';input.autocomplete='off';input.spellcheck=false;
+  input.setAttribute('aria-label','G\u00f5 '+target.label);input.setAttribute('lang',target.language==='zh'?'zh-Hans':'en');input.className='write-input';
+  input.onkeydown=writingInputKey;add($('options'),label,input);
+ });
+ var check=document.createElement('button');check.type='button';check.className='primary write-check';check.textContent='Ki\u1ec3m tra';check.onclick=checkWritingAnswers;add($('options'),check);
+ requestAnimationFrame(function(){var first=targets[0];if(first)$(first.id).focus();});
  if(autoRead)maybeAutoRead();
 }
 function writingInputKey(e){
@@ -216,30 +227,28 @@ function writingInputKey(e){
 }
 function normalizeWriting(value,language){
  value=(value||'').toLowerCase().trim();
+ if(language==='en')return value.replace(/[^a-z0-9]+/g,'');
  return value.replace(/\s/g,'').replace(/[.,!?;:()\-]/g,'').replace(/[\uFF0C\u3002\uFF01\uFF1F\uFF1B\uFF1A\u3001\u201C\u201D\u2018\u2019\uFF08\uFF09\u3010\u3011\u300A\u300B\u2026\u2014]/g,'');
- return value.replace(/[\\s.,!?;:'""()[\\]{}，。！？；：、“”‘’（）【】《》…—-]/g,'');
 }
 function checkWritingAnswers(){
  if(activity!=='write'||locked)return;
- var w=queue[index],en=$('write-english'),zh=$('write-chinese');
- var englishCorrect=normalizeWriting(en.value,'en')===normalizeWriting(w.english,'en');
- var chineseCorrect=normalizeWriting(zh.value,'zh')===normalizeWriting(w.chinese,'zh');
+ var w=queue[index],targets=writingTargets(w),allCorrect=true,firstIncorrect=null;
  empty($('feedback'));
- var status=document.createElement('strong');
- status.textContent=englishCorrect&&chineseCorrect?'Chính xác!':'Kiểm tra lại phần chưa đúng:';
- add($('feedback'),status);
- var enResult=document.createElement('p');enResult.textContent=(englishCorrect?'✓ ':'✗ ')+'Tiếng Anh: '+w.english;
- var zhResult=document.createElement('p');zhResult.textContent=(chineseCorrect?'✓ ':'✗ ')+'Tiếng Trung: '+w.chinese;
- add($('feedback'),enResult,zhResult);
- if(!englishCorrect||!chineseCorrect){
-  text('answer-hint','Sửa ô có dấu ✗ rồi nhấn Enter để kiểm tra lại.');
-  (englishCorrect?zh:en).focus();return;
- }
+ var status=document.createElement('strong');add($('feedback'),status);
+ targets.forEach(function(target){
+  var input=$(target.id),correct=normalizeWriting(input.value,target.language)===normalizeWriting(target.value,target.language);
+  var result=document.createElement('p');result.textContent=correct?'\u2713 '+target.label+': '+target.value:'\u2717 '+target.label+': ch\u01b0a ch\u00fang, th\u1eed l\u1ea1i';add($('feedback'),result);
+  if(!correct){allCorrect=false;if(!firstIncorrect)firstIncorrect=input;}
+ });
+ status.textContent=allCorrect?'\u0110\u00fang!':'H\u00e3y s\u1eeda ph\u1ea7n c\u00f3 d\u1ea5u \u2717:';
+ if(!allCorrect){text('answer-hint','Nh\u1eadp l\u1ea1i ph\u1ea7n ch\u01b0a \u0111\u00fang r\u1ed3i nh\u1ea5n Enter.');firstIncorrect.focus();return;}
  locked=true;document.body.classList.add('answered');
- en.disabled=true;zh.disabled=true;answers.push({word:w,correct:true,selected:w});
- text('score',answers.length+' / '+queue.length+' mục hoàn tất');
- text('answer-hint','Cả hai từ đều đúng. Nhấn Enter hoặc Tiếp theo để tiếp tục.');
- $('next').disabled=false;text('next',index===queue.length-1?'Hoàn tất':'Từ tiếp theo →');
+ targets.forEach(function(target){$(target.id).disabled=true;});
+ $('ipa').textContent=w.pinyin||w.ipa||'';$('audio').hidden=!hasCardAudio(w);if(autoRead)maybeAutoRead();
+ answers.push({word:w,correct:true,selected:w});
+ text('score',answers.length+' / '+queue.length+' m\u1ee5c ho\u00e0n t\u1ea5t');
+ text('answer-hint','Ch\u00ednh x\u00e1c. Nh\u1ea5n Enter ho\u1eb7c Ti\u1ebfp theo \u0111\u1ec3 ti\u1ebfp t\u1ee5c.');
+ $('next').disabled=false;text('next',index===queue.length-1? 'Ho\u00e0n t\u1ea5t':'T\u1eeb ti\u1ebfp theo \u2192');
  recordCompletedQuiz();
 }
 function choose(i){
